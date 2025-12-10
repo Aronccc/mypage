@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown Parser for AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -157,6 +159,63 @@
             background-color: white;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
+
+        /* Modal 動畫 */
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .modal-exit {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .modal-exit-active {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s ease-in, transform 0.2s ease-in;
+        }
+
+        /* Chat Widget Styles */
+        .chat-bubble-user {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 1.25rem 1.25rem 0 1.25rem;
+            padding: 0.75rem 1rem;
+            margin-left: auto;
+            max-width: 80%;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chat-bubble-ai {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border-radius: 1.25rem 1.25rem 1.25rem 0;
+            padding: 0.75rem 1rem;
+            margin-right: auto;
+            max-width: 80%;
+            font-size: 0.9rem;
+            border: 1px solid #e5e7eb;
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+            height: 6px;
+            width: 6px;
+            background-color: #6b7280;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 1px;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="antialiased pb-10">
@@ -294,69 +353,254 @@
                 <span class="text-blue-600 font-semibold tracking-wider text-sm uppercase">Portfolio</span>
                 <h2 class="text-4xl font-bold text-primary mt-2">精選作品</h2>
                 <p class="text-secondary mt-4 max-w-2xl mx-auto">
-                    我的專案🔍
+                    展示我最近的專案，包含全端開發、現代化框架應用與創意解決方案。
                 </p>
             </div>
 
-            <!-- 修改為 grid-cols-2，因為移除了第三個專案 -->
-            <div class="grid md:grid-cols-2 gap-8">
-                
-                <!-- Project 1: 標準差計算機 -->
-                <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group">
-                    <!-- Emoji 封面 -->
-                    <div class="bg-blue-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center">
-                        <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🧮</span>
-                    </div>
-                    <div class="px-2 pb-2">
-                        <h3 class="text-xl font-bold text-primary mb-2">標準差計算機</h3>
-                        <p class="text-secondary text-sm mb-4 line-clamp-2">擁有標準差計算 & X-Y 關係圖分析工具箱。</p>
-                        
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="tech-tag">HTML</span>
-                            <span class="tech-tag">CSS</span>
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Babel</span>
-                            <span class="tech-tag">SVG</span>
-                        </div>
-
-                        <div class="flex gap-3">
-                            <a href="https://aronccc.github.io/-Aronsgsh/" target="_blank" class="flex-1 py-3 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                                <i class="fas fa-external-link-alt"></i> 線上預覽
-                            </a>
-                        </div>
-                    </div>
+            <!-- AI 作品分類 (增加到 8 個作品) -->
+            <div class="mb-16">
+                <div class="flex items-center gap-4 mb-8">
+                    <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
+                        <i class="fas fa-robot text-blue-600"></i> AI & 實作作品
+                    </h3>
+                    <div class="h-px bg-gray-200 flex-grow"></div>
                 </div>
 
-                <!-- Project 2: 3D 射擊遊戲 -->
-                <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group">
-                    <!-- Emoji 封面 -->
-                    <div class="bg-gray-100 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center">
-                        <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎯</span>
-                    </div>
-                    <div class="px-2 pb-2">
-                        <h3 class="text-xl font-bold text-primary mb-2">3D 射擊遊戲</h3>
-                        <!-- 修改後的描述 -->
-                        <p class="text-secondary text-sm mb-4 line-clamp-2">擁有技能玩法的第一人稱3D射擊遊戲</p>
-                        
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="tech-tag">HTML</span>
-                            <span class="tech-tag">CSS</span>
-                            <span class="tech-tag">JavaScript</span>
-                            <span class="tech-tag">Three.js</span>
-                            <span class="tech-tag">WebGL</span>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Project 1: 標準差計算機 (保持正常) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-blue-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🧮</span>
                         </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">標準差計算機</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">擁有標準差計算 & X-Y 關係圖分析工具箱。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">HTML</span>
+                                <span class="tech-tag">CSS</span>
+                                <span class="tech-tag">React</span>
+                            </div>
+                            <div class="mt-auto">
+                                <a href="https://aronccc.github.io/-Aronsgsh/" target="_blank" class="w-full py-2 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                    <i class="fas fa-external-link-alt"></i> 線上預覽
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="flex gap-3">
-                            <a href="https://aronccc.github.io/-Aronsshooter/" target="_blank" class="flex-1 py-3 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                                <i class="fas fa-external-link-alt"></i> 線上預覽
-                            </a>
+                    <!-- Project 2: 3D 射擊遊戲 (保持正常) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-gray-100 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎯</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">3D 射擊遊戲</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">擁有技能玩法的第一人稱3D射擊遊戲。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">Three.js</span>
+                                <span class="tech-tag">WebGL</span>
+                            </div>
+                            <div class="mt-auto">
+                                <a href="https://aronccc.github.io/-Aronsshooter/" target="_blank" class="w-full py-2 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                    <i class="fas fa-external-link-alt"></i> 線上預覽
+                                </a>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Project 3: 待辦事項清單 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-yellow-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">📝</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">待辦事項清單</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">支援拖放排序與本地儲存的任務管理工具。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">Vue.js</span>
+                                <span class="tech-tag">LocalStorage</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 4: 天氣預報 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-sky-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">⛅</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">即時天氣 App</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">串接 OpenWeather API，提供全球天氣資訊。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">API</span>
+                                <span class="tech-tag">JavaScript</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 5: 電商網站 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-purple-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🛒</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">極簡電商</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">具備購物車功能的商品展示網站。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">Redux</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 6: 個人記帳本 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-green-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">💰</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">個人記帳本</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">可視化收支圖表，輕鬆管理個人財務。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">Chart.js</span>
+                                <span class="tech-tag">Vue</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 7: 電影搜尋網 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-red-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎬</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">電影搜尋網</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">搜尋電影資訊，查看評分與介紹。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">TMDB API</span>
+                                <span class="tech-tag">React</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 8: 貪吃蛇遊戲 (開發中) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-emerald-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🐍</span>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">貪吃蛇遊戲</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">經典遊戲復刻，使用 Canvas 技術繪製。</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="tech-tag">HTML5 Canvas</span>
+                                <span class="tech-tag">JS</span>
+                            </div>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-tools"></i> 開發中
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-
-                <!-- 已移除天氣預報 App -->
-
             </div>
+
+            <!-- FreeCodeCamp 作品分類 (升級為卡片樣式) -->
+            <div>
+                <div class="flex items-center gap-4 mb-8">
+                    <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
+                        <i class="fab fa-free-code-camp text-black"></i> FreeCodeCamp 認證
+                    </h3>
+                    <div class="h-px bg-gray-200 flex-grow"></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- 認證卡片 1: 響應式網頁設計 (修改此處) -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-indigo-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <i class="fab fa-html5 text-8xl text-indigo-500 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">響應式網頁設計</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
+                                掌握 HTML5、CSS3、Flexbox 與 Grid，製作適應各種螢幕的網頁。
+                            </p>
+                            <div class="mt-auto">
+                                <!-- 修改：按鈕觸發 Modal -->
+                                <button onclick="openModal('fcc-rwd-modal')" class="w-full py-2 bg-black text-white rounded-xl text-center text-sm font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                                    <i class="fas fa-certificate"></i> 作品預覽
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 認證卡片 2 -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-yellow-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <i class="fab fa-js text-8xl text-yellow-500 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">JavaScript 演算法</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
+                                深入理解 JS 核心概念，學習基礎演算法與資料結構。
+                            </p>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-certificate"></i> 作品預覽
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 認證卡片 3 -->
+                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
+                        <div class="bg-blue-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                            <i class="fab fa-react text-8xl text-blue-500 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                        <div class="px-2 pb-2 flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-primary mb-2">前端開發庫</h3>
+                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
+                                學習 React、Redux、Sass 等熱門技術，構建單頁應用程式。
+                            </p>
+                            <div class="mt-auto">
+                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
+                                    <i class="fas fa-certificate"></i> 作品預覽
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </section>
 
         <!-- Contact Section -->
@@ -440,17 +684,186 @@
 
     </main>
 
-    <!-- 回到頂部按鈕 -->
-    <a href="#home" class="fixed bottom-8 right-8 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 hover:-translate-y-1 transition-all z-40">
+    <!-- Modal 結構 (新增部分) -->
+    <div id="fcc-rwd-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
+        <!-- 黑色半透明背景 -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('fcc-rwd-modal')"></div>
+        
+        <!-- Modal 內容 -->
+        <div class="relative bg-white w-full max-w-5xl rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[85vh] flex flex-col animate-[modal-enter_0.3s_ease-out]">
+            
+            <!-- 標題與關閉按鈕 -->
+            <div class="flex justify-between items-center mb-6 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                        <i class="fab fa-html5 text-xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-primary">響應式網頁設計 - 課程作品</h3>
+                </div>
+                <button onclick="closeModal('fcc-rwd-modal')" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-gray-600"></i>
+                </button>
+            </div>
+
+            <!-- 可捲動的 11 個作品區域 -->
+            <div class="overflow-y-auto pr-2 custom-scrollbar">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    
+                    <!-- Item 1: 貓咪相冊應用 -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-1/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">🐱</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">貓咪相冊應用</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習 HTML</p>
+                    </a>
+
+                    <!-- Item 2: 咖啡店菜單 -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-2/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">☕</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">咖啡店菜單</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習基礎 CSS</p>
+                    </a>
+
+                    <!-- Item 3: 彩色筆 (原第4，遞補為第3) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-3/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">🖍️</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">彩色筆</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習 CSS 顏色</p>
+                    </a>
+
+                    <!-- Item 4: 註冊表單 (原第5，遞補為第4) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-4/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">📝</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">註冊表單</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習 HTML 表單</p>
+                    </a>
+
+                    <!-- Item 5: 調查表單 (原第6，遞補為第5) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-5/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">📋</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">調查表單</h4>
+                        <p class="text-xs text-gray-500 mt-1">Survey Form</p>
+                    </a>
+
+                    <!-- Item 6: 羅斯科繪畫 (原第7，遞補為第6) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-6/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">🎨</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">羅斯科繪畫</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習 CSS 盒子模型</p>
+                    </a>
+
+                    <!-- Item 7: 照片集 (原第8，遞補為第7) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-7/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">📷</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">照片集</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習 CSS 彈性盒子</p>
+                    </a>
+
+                    <!-- Item 8: 營養標籤 (原第9，遞補為第8) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-8/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">🏷️</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">營養標籤</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習排版</p>
+                    </a>
+
+                    <!-- Item 9: 小測驗 (原第10，遞補為第9) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-9/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">❓</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">小測驗</h4>
+                        <p class="text-xs text-gray-500 mt-1">學習無障礙</p>
+                    </a>
+
+                    <!-- Item 10: 致敬頁 (原第11，遞補為第10) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-10/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">🕯️</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">致敬頁</h4>
+                        <p class="text-xs text-gray-500 mt-1">Tribute Page</p>
+                    </a>
+
+                    <!-- Item 11: 技術文件 (原第3，移動到最後) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-11/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">📄</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">技術文件</h4>
+                        <p class="text-xs text-gray-500 mt-1">Documentation</p>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Widget (New) -->
+    <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end">
+        <!-- Chat Window (Hidden by default) -->
+        <div id="ai-chat-window" class="hidden mb-4 bg-white rounded-2xl shadow-2xl w-[90vw] md:w-[350px] h-[500px] flex-col border border-gray-200 overflow-hidden transform transition-all origin-bottom-right">
+            <!-- Header -->
+            <div class="bg-indigo-600 p-4 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-robot"></i>
+                    <span class="font-bold">Aron's AI Assistant ✨</span>
+                </div>
+                <button onclick="toggleChat()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Messages Area -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-4">
+                <!-- Welcome Message -->
+                <div class="chat-bubble-ai">
+                    <p>你好！我是 Aron 的 AI 助手。你可以問我關於 Aron 的技能、專案，或是作品集的任何問題！✨</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-white border-t border-gray-100 flex gap-2">
+                <input type="text" id="chat-input" placeholder="問我關於 Aron 的事情..." 
+                       class="flex-1 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-indigo-500 text-sm"
+                       onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-indigo-700 transition-colors flex-shrink-0">
+                    <i class="fas fa-paper-plane text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button onclick="toggleChat()" class="w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center text-2xl z-50 group">
+            <!-- 修改此處：將 fa-sparkles 改為 fa-robot -->
+            <i class="fas fa-robot group-hover:animate-pulse"></i>
+        </button>
+    </div>
+
+    <!-- 回到頂部按鈕 (Adjusted position slightly) -->
+    <a href="#home" class="fixed bottom-8 right-8 w-12 h-12 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 hover:-translate-y-1 transition-all z-30 border border-gray-200">
         <i class="fas fa-arrow-up"></i>
     </a>
 
     <script>
-        // 確保 DOM 載入後才執行 (避免 Cannot read properties of null)
+        // ... (保留原有的 script) ...
         document.addEventListener('DOMContentLoaded', () => {
             
             // 1. 打字機效果 (真實逐字打字)
-            // 修改說明：將 🧮 改回 🖥️
             const words = ["AI新手", "學習程式中🖥️", "遊戲愛好者🎮"];
             let wordIndex = 0;
             let charIndex = 0;
@@ -529,7 +942,6 @@
                     submitBtn.disabled = true;
 
                     // 抓取表單資料
-                    // 使用 querySelector 比較穩健，即使 id 不存在也能抓取 name
                     const name = form.querySelector('input[name="name"]').value;
                     const email = form.querySelector('input[name="email"]').value;
                     const subject = form.querySelector('input[name="subject"]').value;
@@ -607,6 +1019,142 @@
                     textSpan.innerText = originalText;
                 }, 2000);
             }
+        }
+
+        // ================= New Modal Logic =================
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden'; // 防止背景滾動
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = ''; // 恢復背景滾動
+            }
+        }
+
+        // ================= Gemini AI Chat Logic =================
+        const apiKey = ""; // API Key will be injected by the environment
+        
+        // System prompt context - describes Aron and his portfolio
+        const systemContext = `
+            You are an AI assistant for Aron's portfolio website. 
+            Your name is "Aron's AI Assistant".
+            
+            Here is the information about Aron you should know:
+            - **Identity:** High school student, full-stack developer, AI enthusiast.
+            - **Tagline:** "Turning ideas into reality with AI."
+            - **Skills:** HTML, CSS, JavaScript, Python, C++, React, Vue.js, Three.js, Gemini API.
+            - **Tools:** VS Code, GitHub, Gemini.
+            - **Contact:** aronforcode@gmail.com.
+            
+            **Featured AI Projects:**
+            1. **Standard Deviation Calculator:** React app for stats & graphs. (Live)
+            2. **3D Shooter:** WebGL/Three.js FPS game. (Live)
+            3. **Todo List:** Vue.js + LocalStorage. (In development)
+            4. **Weather App:** OpenWeather API. (In development)
+            5. **E-commerce:** React + Redux. (In development)
+            6. **Expense Tracker:** Vue + Chart.js. (In development)
+            7. **Movie Search:** TMDB API + React. (In development)
+            8. **Snake Game:** HTML5 Canvas. (In development)
+            
+            **FreeCodeCamp Certifications:**
+            - **Responsive Web Design:** 11 completed projects (Cat Photo, Cafe Menu, Markers, Form, Survey, Painting, Photo Gallery, Nutrition Label, Quiz, Tribute, Doc).
+            - **JS Algorithms & Front End Libraries:** Not started yet.
+
+            **Tone:** Friendly, enthusiastic, encouraging, and helpful. Use emojis occasionally (✨, 🚀).
+            **Language:** Reply in Traditional Chinese (繁體中文) unless the user speaks English.
+            **Constraint:** Keep answers concise (under 3 sentences if possible).
+        `;
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('ai-chat-window');
+            chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) {
+                document.getElementById('chat-input').focus();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('chat-input');
+            const messageContainer = document.getElementById('chat-messages');
+            const userText = inputField.value.trim();
+            
+            if (!userText) return;
+
+            // 1. Add User Message
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble-user';
+            userBubble.textContent = userText;
+            messageContainer.appendChild(userBubble);
+            
+            inputField.value = '';
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            // 2. Add Loading Indicator
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'chat-bubble-ai';
+            loadingBubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            loadingBubble.id = 'loading-bubble';
+            messageContainer.appendChild(loadingBubble);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            try {
+                // 3. Call Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: userText }]
+                        }],
+                        systemInstruction: {
+                            parts: [{ text: systemContext }]
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，我現在有點累，請稍後再試。😅";
+
+                // 4. Replace Loading with AI Response
+                messageContainer.removeChild(loadingBubble);
+                
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'chat-bubble-ai';
+                // Parse simple markdown if needed, here just basic text
+                aiBubble.innerHTML = marked.parse(aiText);
+                messageContainer.appendChild(aiBubble);
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                messageContainer.removeChild(loadingBubble);
+                const errorBubble = document.createElement('div');
+                errorBubble.className = 'chat-bubble-ai text-red-500';
+                errorBubble.textContent = "連線發生錯誤，請稍後再試。";
+                messageContainer.appendChild(errorBubble);
+            }
+
+            messageContainer.scrollTop = messageContainer.scrollHeight;
         }
     </script>
 </body>
