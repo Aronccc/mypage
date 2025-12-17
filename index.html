@@ -15,6 +15,19 @@
     <!-- Markdown Parser for AI responses -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // 初始化 EmailJS - 已填入您的 Public Key
+            try {
+                emailjs.init("mBmfYaTbIckxfBWiE"); 
+            } catch (e) {
+                console.log("EmailJS 初始化失敗:", e);
+            }
+        })();
+    </script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -279,7 +292,7 @@
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] lg:w-[450px] lg:h-[450px] bg-blue-100 rounded-full blur-3xl -z-10"></div>
                 <div class="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
                     <!-- 使用動漫風格 Placeholder -->
-                    <img src="IMG_20251203_235357_165.jpg" alt="Gym Cat" class="w-full h-full object-cover">
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Aron&backgroundColor=b6e3f4&clothing=hoodie&eyes=happy" alt="Aron Avatar" class="w-full h-full object-cover">
                 </div>
             </div>
         </section>
@@ -820,6 +833,15 @@
                         <p class="text-xs text-gray-500 mt-1">Tribute Page</p>
                     </a>
 
+                    <!-- Item 11: 技術文件 (原第3，移動到最後) -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-11/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
+                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
+                            <span class="text-3xl">📄</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">技術文件</h4>
+                        <p class="text-xs text-gray-500 mt-1">Documentation</p>
+                    </a>
+
                 </div>
             </div>
         </div>
@@ -872,7 +894,7 @@
     </a>
 
     <script>
-        // ... (保留原有的 script) ...
+        // 確保 DOM 載入後才執行 (避免 Cannot read properties of null)
         document.addEventListener('DOMContentLoaded', () => {
             
             // 1. 打字機效果 (真實逐字打字)
@@ -937,7 +959,7 @@
                 });
             });
 
-            // 3. 聯絡表單 (Mailto 功能)
+            // 3. 聯絡表單 (修改為真正透過 EmailJS 寄信)
             const form = document.getElementById('contact-form');
             const successMessage = document.getElementById('success-message');
             const submitBtn = document.getElementById('submit-btn');
@@ -949,32 +971,31 @@
                     const originalBtnContent = submitBtn.innerHTML;
                     
                     // 顯示 loading 狀態
-                    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 準備發送...';
+                    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 傳送中...';
                     submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                     submitBtn.disabled = true;
 
-                    // 抓取表單資料
-                    const name = form.querySelector('input[name="name"]').value;
-                    const email = form.querySelector('input[name="email"]').value;
-                    const subject = form.querySelector('input[name="subject"]').value;
-                    const message = form.querySelector('textarea[name="message"]').value;
-
-                    // 構建 mailto 連結
-                    const mailtoLink = `mailto:aronforcode@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent("姓名: " + name + "\nEmail: " + email + "\n\n訊息內容:\n" + message)}`;
-
-                    // 延遲一點點讓使用者看到按鈕變化
-                    setTimeout(() => {
-                        window.location.href = mailtoLink;
-
-                        // 隱藏表單顯示成功訊息 (假裝已送出，實際上是打開了郵件軟體)
-                        form.classList.add('hidden');
-                        successMessage.classList.remove('hidden');
-                        
-                        // 恢復按鈕狀態
-                        submitBtn.innerHTML = originalBtnContent;
-                        submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                        submitBtn.disabled = false;
-                    }, 800);
+                    // 使用 EmailJS 發送表單
+                    emailjs.sendForm('service_aron1119', 'template_nj9lowz', this)
+                        .then(function() {
+                            console.log('SUCCESS!');
+                            // 隱藏表單，顯示成功訊息
+                            form.classList.add('hidden');
+                            successMessage.classList.remove('hidden');
+                            
+                            // 恢復按鈕
+                            submitBtn.innerHTML = originalBtnContent;
+                            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                            submitBtn.disabled = false;
+                        }, function(error) {
+                            console.log('FAILED...', error);
+                            alert('發送失敗，請稍後再試：' + JSON.stringify(error));
+                            
+                            // 恢復按鈕
+                            submitBtn.innerHTML = originalBtnContent;
+                            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                            submitBtn.disabled = false;
+                        });
                 });
             }
         });
