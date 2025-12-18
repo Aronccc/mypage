@@ -1124,36 +1124,52 @@
             }
         }
 
-        // 封裝 API 請求功能
+        // 封裝 API 請求功能 - 增強版錯誤處理
         async function callGeminiAPI(modelName, userText) {
-            console.log(`Trying model: ${modelName}...`); // Debug log
+            console.log(`Trying model: ${modelName}...`); 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: userText }]
-                    }],
-                    systemInstruction: {
-                        parts: [{ text: systemContext }]
-                    }
+                    contents: [{ parts: [{ text: userText }] }],
+                    systemInstruction: { parts: [{ text: systemContext }] }
                 })
             });
-            
+
             if (!response.ok) {
-                // 如果是 404 或 400，拋出特定錯誤以便切換模型
-                if (response.status === 404 || response.status === 400 || response.status === 503) {
-                    throw new Error("ModelError");
+                // 嘗試解析詳細錯誤資訊
+                let errorBody;
+                try {
+                    errorBody = await response.json();
+                } catch (e) {
+                    errorBody = { error: { message: response.statusText } };
                 }
-                const errorData = await response.json().catch(() => ({}));
-                // 處理 429 請求過多
+                
+                const errorMessage = errorBody.error?.message || JSON.stringify(errorBody);
+                console.error(`Google API Error (${modelName}):`, errorMessage);
+
+                // 1. 檢查是否為 API Key 問題 (這類錯誤換模型也沒救，直接拋出)
+                if (errorMessage.includes("API key not valid") || 
+                    errorMessage.includes("key expired") || 
+                    errorMessage.includes("API_KEY_INVALID") ||
+                    errorMessage.includes("check your API key")) {
+                    throw new Error("InvalidApiKey");
+                }
+
+                // 2. 檢查是否為 429 請求過多
                 if (response.status === 429) {
                     throw new Error("TooManyRequests");
                 }
-                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || response.statusText}`);
+
+                // 3. 檢查是否為模型不存在或參數錯誤 (404/400) -> 拋出 ModelError 讓迴圈繼續試下一個
+                if (response.status === 404 || response.status === 400 || response.status === 503) {
+                    throw new Error("ModelError"); 
+                }
+
+                // 其他未預期錯誤
+                throw new Error(`API Error: ${response.status} - ${errorMessage}`);
             }
             return response.json();
         }
@@ -1193,33 +1209,32 @@
             }
 
             try {
-                // 3. Call Gemini API with Retry Logic (嘗試多種模型)
-                // 定義模型清單：優先使用 flash (快/便宜)，其次 pro (強大)，最後嘗試 experimental
+                // 3. Call Gemini API with Retry Logic
+                // 擴充模型清單，增加成功率
                 const candidateModels = [
-                    "gemini-1.5-flash", 
-                    "gemini-1.5-flash-001",
-                    "gemini-1.5-flash-002",
-                    "gemini-1.5-pro",
-                    "gemini-1.5-pro-001"
+                    "gemini-1.5-flash",
+                    "gemini-1.5-flash-8b", 
+                    "gemini-2.0-flash-exp",
+                    "gemini-1.5-pro"
                 ];
                 
                 let data = null;
                 let lastError = null;
 
-                // 迴圈嘗試每個模型
                 for (const model of candidateModels) {
                     try {
                         data = await callGeminiAPI(model, userText);
-                        break; // 成功就跳出迴圈
+                        break; // 成功就跳出
                     } catch (err) {
-                        console.warn(`Model ${model} failed:`, err.message);
+                        console.warn(`Model ${model} failed, trying next...`);
                         lastError = err;
                         
-                        // 修改邏輯：即使是 TooManyRequests，也嘗試切換下一個模型
-                        // 因為 Flash 和 Pro 的額度是分開的
+                        // 如果是 API Key 無效，直接停止嘗試
+                        if (err.message === "InvalidApiKey") throw err;
+
+                        // 如果是 429，等待一下再試下一個
                         if (err.message === "TooManyRequests") {
-                            console.log("Rate limit hit, waiting 1s before trying next model...");
-                            await new Promise(r => setTimeout(r, 1000)); // 等待 1 秒再試下一個
+                            await new Promise(r => setTimeout(r, 1000));
                         }
                     }
                 }
@@ -1235,7 +1250,6 @@
                 
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble-ai';
-                // Parse simple markdown if needed
                 if (typeof marked !== 'undefined') {
                     aiBubble.innerHTML = marked.parse(aiText);
                 } else {
@@ -1249,12 +1263,14 @@
                 if(loading) messageContainer.removeChild(loading);
                 
                 const errorBubble = document.createElement('div');
-                errorBubble.className = 'chat-bubble-ai text-red-500';
+                errorBubble.className = 'chat-bubble-ai text-red-500 text-xs'; // 縮小字體以顯示詳細錯誤
                 
                 if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "🔥 AI 現在太熱門了（頻率限制），請喝口水休息 30 秒後再試一次！";
+                     errorBubble.textContent = "🔥 使用人數過多，請稍後再試。";
+                } else if (error.message === "InvalidApiKey") {
+                     errorBubble.textContent = "🔑 API Key 無效。如果您有限制網域，請確認本地端是否在白名單內。";
                 } else {
-                     errorBubble.textContent = "連線發生錯誤，無法連接到 AI 模型。請檢查您的 API Key 或網路。";
+                     errorBubble.textContent = "連線失敗。請按 F12 查看 Console 詳細錯誤訊息 (通常是 API Key 權限問題)。";
                 }
                 
                 messageContainer.appendChild(errorBubble);
