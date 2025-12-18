@@ -1197,9 +1197,10 @@
                 // 定義模型清單：優先使用 flash (快/便宜)，其次 pro (強大)，最後嘗試 experimental
                 const candidateModels = [
                     "gemini-1.5-flash", 
+                    "gemini-1.5-flash-001",
                     "gemini-1.5-flash-002",
                     "gemini-1.5-pro",
-                    "gemini-2.0-flash-exp"
+                    "gemini-1.5-pro-001"
                 ];
                 
                 let data = null;
@@ -1213,10 +1214,13 @@
                     } catch (err) {
                         console.warn(`Model ${model} failed:`, err.message);
                         lastError = err;
+                        
+                        // 修改邏輯：即使是 TooManyRequests，也嘗試切換下一個模型
+                        // 因為 Flash 和 Pro 的額度是分開的
                         if (err.message === "TooManyRequests") {
-                            throw err; // 如果是請求過多，直接停止嘗試，因為換模型也沒用
+                            console.log("Rate limit hit, waiting 1s before trying next model...");
+                            await new Promise(r => setTimeout(r, 1000)); // 等待 1 秒再試下一個
                         }
-                        // 如果是 ModelError，繼續嘗試下一個
                     }
                 }
 
@@ -1248,9 +1252,9 @@
                 errorBubble.className = 'chat-bubble-ai text-red-500';
                 
                 if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "目前使用人數過多（達到請求上限），請休息一分鐘後再試。☕";
+                     errorBubble.textContent = "🔥 AI 現在太熱門了（頻率限制），請喝口水休息 30 秒後再試一次！";
                 } else {
-                     errorBubble.textContent = "連線發生錯誤，無法連接到任何 AI 模型。請檢查您的網路或 API Key。";
+                     errorBubble.textContent = "連線發生錯誤，無法連接到 AI 模型。請檢查您的 API Key 或網路。";
                 }
                 
                 messageContainer.appendChild(errorBubble);
