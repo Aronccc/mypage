@@ -1078,7 +1078,7 @@
         // TODO: 請在下方引號中填入您的 Gemini API Key 才能在本地端使用
         const apiKey = "AIzaSyAYbGOPaWxhXwTu90LJxVq6jkpceym8cv0"; 
         
-        // System prompt context - describes Aron and his portfolio
+        // System prompt context
         const systemContext = `
             You are an AI assistant for Aron's portfolio website. 
             Your name is "Aron's AI Assistant".
@@ -1124,8 +1124,9 @@
             }
         }
 
-        // 封裝 API 請求功能，支援失敗時切換模型
+        // 封裝 API 請求功能
         async function callGeminiAPI(modelName, userText) {
+            console.log(`Trying model: ${modelName}...`); // Debug log
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
             const response = await fetch(url, {
                 method: 'POST',
@@ -1144,8 +1145,8 @@
             
             if (!response.ok) {
                 // 如果是 404 或 400，拋出特定錯誤以便切換模型
-                if (response.status === 404 || response.status === 400) {
-                    throw new Error("ModelNotFound");
+                if (response.status === 404 || response.status === 400 || response.status === 503) {
+                    throw new Error("ModelError");
                 }
                 const errorData = await response.json().catch(() => ({}));
                 // 處理 429 請求過多
@@ -1192,19 +1193,35 @@
             }
 
             try {
-                // 3. Call Gemini API with Fallback Logic
-                // 優先嘗試 gemini-1.5-flash-001 (指定版本比較穩定)
-                // 如果失敗，嘗試 gemini-pro (舊版穩定模型)
-                let data;
-                try {
-                    data = await callGeminiAPI("gemini-1.5-flash-001", userText);
-                } catch (firstError) {
-                    if (firstError.message === "ModelNotFound") {
-                        console.warn("Flash model not found, switching to gemini-pro...");
-                        data = await callGeminiAPI("gemini-pro", userText);
-                    } else {
-                        throw firstError; // 重新拋出其他錯誤 (如 429)
+                // 3. Call Gemini API with Retry Logic (嘗試多種模型)
+                // 定義模型清單：優先使用 flash (快/便宜)，其次 pro (強大)，最後嘗試 experimental
+                const candidateModels = [
+                    "gemini-1.5-flash", 
+                    "gemini-1.5-flash-002",
+                    "gemini-1.5-pro",
+                    "gemini-2.0-flash-exp"
+                ];
+                
+                let data = null;
+                let lastError = null;
+
+                // 迴圈嘗試每個模型
+                for (const model of candidateModels) {
+                    try {
+                        data = await callGeminiAPI(model, userText);
+                        break; // 成功就跳出迴圈
+                    } catch (err) {
+                        console.warn(`Model ${model} failed:`, err.message);
+                        lastError = err;
+                        if (err.message === "TooManyRequests") {
+                            throw err; // 如果是請求過多，直接停止嘗試，因為換模型也沒用
+                        }
+                        // 如果是 ModelError，繼續嘗試下一個
                     }
+                }
+
+                if (!data) {
+                    throw lastError || new Error("All models failed");
                 }
 
                 const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，我現在有點累，請稍後再試。😅";
@@ -1214,7 +1231,7 @@
                 
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble-ai';
-                // Parse simple markdown if needed, here just basic text
+                // Parse simple markdown if needed
                 if (typeof marked !== 'undefined') {
                     aiBubble.innerHTML = marked.parse(aiText);
                 } else {
@@ -1223,15 +1240,17 @@
                 messageContainer.appendChild(aiBubble);
 
             } catch (error) {
-                console.error("Gemini API Error:", error);
-                messageContainer.removeChild(loadingBubble);
+                console.error("Gemini API Final Error:", error);
+                const loading = document.getElementById('loading-bubble');
+                if(loading) messageContainer.removeChild(loading);
+                
                 const errorBubble = document.createElement('div');
                 errorBubble.className = 'chat-bubble-ai text-red-500';
                 
                 if (error.message === "TooManyRequests") {
                      errorBubble.textContent = "目前使用人數過多（達到請求上限），請休息一分鐘後再試。☕";
                 } else {
-                     errorBubble.textContent = "連線發生錯誤，請檢查您的網路或 API Key 設定 (F12 Console 有詳細資訊)。";
+                     errorBubble.textContent = "連線發生錯誤，無法連接到任何 AI 模型。請檢查您的網路或 API Key。";
                 }
                 
                 messageContainer.appendChild(errorBubble);
