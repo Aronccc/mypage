@@ -1194,12 +1194,12 @@
 
             try {
                 // 3. Call Gemini API with Smart Retry Logic
-                // 根據您的 Log，只有 gemini-2.0-flash-exp 是有效的 (雖然會 429)，其他都是 404。
-                // 所以我們優先用 2.0，並針對 429 做強重試。
+                // 根據錯誤日誌，只有 gemini-2.0-flash-exp 是有效的 (雖然會 429)，其他都是 404。
+                // 所以我們調整策略：優先用 2.0，並針對 429 做強重試 (死守策略)。
                 const candidateModels = [
                     "gemini-2.0-flash-exp", 
                     "gemini-1.5-flash",
-                    "gemini-1.5-flash-8b"
+                    "gemini-1.5-flash-001"
                 ];
                 
                 let data = null;
@@ -1207,35 +1207,37 @@
 
                 // 迴圈嘗試每個模型
                 for (const model of candidateModels) {
-                    try {
-                        data = await callGeminiAPI(model, userText);
-                        break; // 成功就跳出迴圈
-                    } catch (err) {
-                        console.warn(`Model ${model} failed:`, err.message);
-                        lastError = err;
-                        
-                        if (err.message === "TooManyRequests") {
-                            // 關鍵修改：如果是 429 (Rate Limit)，給它一次「原地復活」的機會
-                            // 您的 Log 顯示需要等待約 4~9 秒，我們設定等待 5 秒後重試同一個模型
-                            console.log(`Rate limit hit on ${model}. Waiting 5s to retry...`);
+                    // 針對同一個模型，最多重試 3 次 (加上原本1次共4次)
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try {
+                            data = await callGeminiAPI(model, userText);
+                            break; // 成功取得資料，跳出重試迴圈
+                        } catch (err) {
+                            console.warn(`Model ${model} attempt ${attempt + 1} failed:`, err.message);
+                            lastError = err;
                             
-                            // 更新 UI 告訴使用者正在等待
-                            const loadingDots = loadingBubble.querySelectorAll('.typing-dot');
-                            loadingDots.forEach(d => d.style.backgroundColor = '#fbbf24'); // 變黃色表示等待中
-                            
-                            await new Promise(r => setTimeout(r, 5000)); 
-                            
-                            try {
-                                console.log(`Retrying ${model}...`);
-                                data = await callGeminiAPI(model, userText);
-                                break; // 重試成功！
-                            } catch (retryErr) {
-                                console.warn(`Retry failed for ${model}:`, retryErr.message);
-                                lastError = retryErr;
-                                // 重試失敗才換下一個模型
+                            if (err.message === "TooManyRequests") {
+                                // 關鍵修改：如果是 429 (Rate Limit)，給它「原地復活」的機會
+                                // 隨著重試次數增加等待時間：4s -> 8s -> 12s
+                                const waitTime = 4000 * (attempt + 1);
+                                console.log(`Rate limit hit on ${model}. Waiting ${waitTime/1000}s to retry...`);
+                                
+                                // 更新 UI 告訴使用者正在等待
+                                const loadingDots = loadingBubble.querySelectorAll('.typing-dot');
+                                loadingDots.forEach(d => d.style.backgroundColor = '#fbbf24'); // 變黃色表示等待中
+                                
+                                await new Promise(r => setTimeout(r, waitTime)); 
+                                // 繼續下一次迴圈 (Retry same model)
+                            } else if (err.message === "ModelError") {
+                                // 如果是 404/400 (模型不存在)，直接放棄這個模型，換下一個
+                                break; 
+                            } else {
+                                // 其他未知錯誤，也嘗試下一個
+                                break;
                             }
                         }
                     }
+                    if (data) break; // 如果拿到資料，跳出模型迴圈
                 }
 
                 if (!data) {
@@ -1266,7 +1268,7 @@
                 errorBubble.className = 'chat-bubble-ai text-red-500';
                 
                 if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "🔥 伺服器現在非常忙碌（請求過多），請等待約 30 秒後再試一次。";
+                     errorBubble.textContent = "🔥 伺服器現在非常忙碌（請求過多），已重試多次仍失敗。請等待約 1 分鐘後再試。";
                 } else {
                      errorBubble.textContent = "連線發生錯誤。看來目前的 API Key 無法存取可用的模型，請稍後再試。";
                 }
