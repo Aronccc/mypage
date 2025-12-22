@@ -1076,7 +1076,7 @@
 
         // ================= Gemini AI Chat Logic =================
         // TODO: 請在下方引號中填入您的 Gemini API Key 才能在本地端使用
-        const apiKey = "AIzaSyDXbWMEA88rKVtaHz1qf5KAa3UgbK6weTM"; 
+        const apiKey = "AIzaSyDKDIrmyCJbF04iIptvydL3NIb8TMb81AY"; 
         
         // System prompt context
         const systemContext = `
@@ -1201,15 +1201,15 @@
             }
 
             try {
-                // 3. Call Gemini API with Fast Switch Logic
-                // 策略：嘗試多種不同架構的模型。如果 2.0 忙碌，立刻換 1.5，再不行換 1.0 (gemini-pro)
+                // 3. Call Gemini API with Smart Retry Logic (Targeted)
+                // 根據日誌：3-flash-preview 和 2.0-flash-exp 會回傳 429 (代表存在但忙碌)
+                // 其他模型回傳 404 (代表不存在)。
+                // 策略：優先死守那些回傳 429 的模型，不要輕易切換到 404 的模型。
                 const candidateModels = [
-                    "gemini-3-flash-preview", // 新增：嘗試使用者指定的 Gemini 3
-                    "gemini-2.0-flash-exp",   // 次選：強大的 2.0 實驗版
-                    "gemini-1.5-flash",       // 標準版
-                    "gemini-1.5-flash-8b",    // 輕量版 (通常比較容易通)
-                    "gemini-1.5-pro",         // Pro 版
-                    "gemini-pro"              // 舊版 1.0 Pro (最後防線，通常最穩)
+                    "gemini-2.0-flash-exp",   // 通常這個最穩 (雖然容易 429)
+                    "gemini-3-flash-preview", // 您指定的模型
+                    "gemini-1.5-flash",       // 備用
+                    "gemini-1.5-flash-8b"     // 備用
                 ];
                 
                 let data = null;
@@ -1217,20 +1217,40 @@
 
                 // 迴圈嘗試每個模型
                 for (const model of candidateModels) {
-                    try {
-                        data = await callGeminiAPI(model, userText);
-                        console.log(`Success with model: ${model}`);
-                        break; // 成功就跳出迴圈
-                    } catch (err) {
-                        console.warn(`Model ${model} failed:`, err.message);
-                        lastError = err;
-                        
-                        if (err.message === "TooManyRequests") {
-                            // 如果是 429 (請求過多)，不要死守，等待 1 秒緩衝後嘗試 *下一個* 模型
-                            console.log("Rate limit hit, switching to next model immediately...");
-                            await new Promise(r => setTimeout(r, 1000));
+                    // 針對同一個模型，最多重試 3 次
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try {
+                            data = await callGeminiAPI(model, userText);
+                            break; // 成功取得資料，跳出重試迴圈
+                        } catch (err) {
+                            console.warn(`Model ${model} attempt ${attempt + 1} failed:`, err.message);
+                            lastError = err;
+                            
+                            if (err.message === "TooManyRequests") {
+                                // 關鍵修改：如果是 429 (Rate Limit)，這代表模型是存在的！
+                                // 我們應該死守這個模型，而不是換到下一個可能會報 404 的模型。
+                                const waitTime = 3000 * (attempt + 1); // 3s, 6s, 9s
+                                console.log(`Rate limit hit on ${model}. Waiting ${waitTime/1000}s to retry...`);
+                                
+                                // 更新 UI 告訴使用者正在等待
+                                const loadingDots = loadingBubble.querySelectorAll('.typing-dot');
+                                loadingDots.forEach(d => d.style.backgroundColor = '#fbbf24'); // 變黃色表示等待中
+                                
+                                await new Promise(r => setTimeout(r, waitTime)); 
+                                // 繼續下一次迴圈 (Retry same model)
+                            } else if (err.message === "ModelError") {
+                                // 如果是 404/400 (模型不存在)，直接放棄這個模型，換下一個
+                                // 因為重試也沒用
+                                break; 
+                            } else {
+                                // 其他未知錯誤，也嘗試下一個
+                                break;
+                            }
                         }
-                        // 如果是 ModelError (404)，直接換下一個，不等待
+                    }
+                    if (data) {
+                        console.log(`Successfully connected to ${model}`);
+                        break; // 如果拿到資料，跳出模型迴圈
                     }
                 }
 
@@ -1259,14 +1279,12 @@
                 if(loading) messageContainer.removeChild(loading);
                 
                 const errorBubble = document.createElement('div');
-                errorBubble.className = 'chat-bubble-ai text-red-500 text-xs';
+                errorBubble.className = 'chat-bubble-ai text-red-500';
                 
                 if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "🔥 伺服器忙碌中（請求過多）。請喝口水休息 1 分鐘後再試。";
-                } else if (error.message === "PermissionDenied") {
-                     errorBubble.textContent = "🚫 權限不足。請檢查 Google Cloud 專案是否已啟用 Generative Language API。";
+                     errorBubble.textContent = "🔥 伺服器現在非常忙碌，重試多次仍失敗。請喝口水休息 1 分鐘後再試。";
                 } else {
-                     errorBubble.textContent = "連線失敗。請按 F12 檢查 Console，可能是 API Key 權限或專案額度問題。";
+                     errorBubble.textContent = "連線發生錯誤。看來目前的 API Key 無法存取可用的模型 (404)，請稍後再試。";
                 }
                 
                 messageContainer.appendChild(errorBubble);
