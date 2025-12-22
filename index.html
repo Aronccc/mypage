@@ -1127,6 +1127,7 @@
         // 封裝 API 請求功能
         async function callGeminiAPI(modelName, userText) {
             console.log(`Trying model: ${modelName}...`); // Debug log
+            // 大部分模型使用 v1beta，但為了相容性，我們統一使用 v1beta
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
             const response = await fetch(url, {
                 method: 'POST',
@@ -1149,10 +1150,17 @@
                     throw new Error("ModelError");
                 }
                 const errorData = await response.json().catch(() => ({}));
+                
                 // 處理 429 請求過多
                 if (response.status === 429) {
                     throw new Error("TooManyRequests");
                 }
+                
+                // 處理其他權限問題
+                if (response.status === 403) {
+                    throw new Error("PermissionDenied");
+                }
+
                 throw new Error(`API Error: ${response.status} - ${errorData.error?.message || response.statusText}`);
             }
             return response.json();
@@ -1193,13 +1201,15 @@
             }
 
             try {
-                // 3. Call Gemini API with Smart Retry Logic
-                // 根據錯誤日誌，只有 gemini-2.0-flash-exp 是有效的 (雖然會 429)，其他都是 404。
-                // 所以我們調整策略：優先用 2.0，並針對 429 做強重試 (死守策略)。
+                // 3. Call Gemini API with Fast Switch Logic
+                // 策略：嘗試多種不同架構的模型。如果 2.0 忙碌，立刻換 1.5，再不行換 1.0 (gemini-pro)
                 const candidateModels = [
-                    "gemini-2.0-flash-exp", 
-                    "gemini-1.5-flash",
-                    "gemini-1.5-flash-001"
+                    "gemini-3-flash-preview", // 新增：嘗試使用者指定的 Gemini 3
+                    "gemini-2.0-flash-exp",   // 次選：強大的 2.0 實驗版
+                    "gemini-1.5-flash",       // 標準版
+                    "gemini-1.5-flash-8b",    // 輕量版 (通常比較容易通)
+                    "gemini-1.5-pro",         // Pro 版
+                    "gemini-pro"              // 舊版 1.0 Pro (最後防線，通常最穩)
                 ];
                 
                 let data = null;
@@ -1207,37 +1217,21 @@
 
                 // 迴圈嘗試每個模型
                 for (const model of candidateModels) {
-                    // 針對同一個模型，最多重試 3 次 (加上原本1次共4次)
-                    for (let attempt = 0; attempt < 3; attempt++) {
-                        try {
-                            data = await callGeminiAPI(model, userText);
-                            break; // 成功取得資料，跳出重試迴圈
-                        } catch (err) {
-                            console.warn(`Model ${model} attempt ${attempt + 1} failed:`, err.message);
-                            lastError = err;
-                            
-                            if (err.message === "TooManyRequests") {
-                                // 關鍵修改：如果是 429 (Rate Limit)，給它「原地復活」的機會
-                                // 隨著重試次數增加等待時間：4s -> 8s -> 12s
-                                const waitTime = 4000 * (attempt + 1);
-                                console.log(`Rate limit hit on ${model}. Waiting ${waitTime/1000}s to retry...`);
-                                
-                                // 更新 UI 告訴使用者正在等待
-                                const loadingDots = loadingBubble.querySelectorAll('.typing-dot');
-                                loadingDots.forEach(d => d.style.backgroundColor = '#fbbf24'); // 變黃色表示等待中
-                                
-                                await new Promise(r => setTimeout(r, waitTime)); 
-                                // 繼續下一次迴圈 (Retry same model)
-                            } else if (err.message === "ModelError") {
-                                // 如果是 404/400 (模型不存在)，直接放棄這個模型，換下一個
-                                break; 
-                            } else {
-                                // 其他未知錯誤，也嘗試下一個
-                                break;
-                            }
+                    try {
+                        data = await callGeminiAPI(model, userText);
+                        console.log(`Success with model: ${model}`);
+                        break; // 成功就跳出迴圈
+                    } catch (err) {
+                        console.warn(`Model ${model} failed:`, err.message);
+                        lastError = err;
+                        
+                        if (err.message === "TooManyRequests") {
+                            // 如果是 429 (請求過多)，不要死守，等待 1 秒緩衝後嘗試 *下一個* 模型
+                            console.log("Rate limit hit, switching to next model immediately...");
+                            await new Promise(r => setTimeout(r, 1000));
                         }
+                        // 如果是 ModelError (404)，直接換下一個，不等待
                     }
-                    if (data) break; // 如果拿到資料，跳出模型迴圈
                 }
 
                 if (!data) {
@@ -1265,12 +1259,14 @@
                 if(loading) messageContainer.removeChild(loading);
                 
                 const errorBubble = document.createElement('div');
-                errorBubble.className = 'chat-bubble-ai text-red-500';
+                errorBubble.className = 'chat-bubble-ai text-red-500 text-xs';
                 
                 if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "🔥 伺服器現在非常忙碌（請求過多），已重試多次仍失敗。請等待約 1 分鐘後再試。";
+                     errorBubble.textContent = "🔥 伺服器忙碌中（請求過多）。請喝口水休息 1 分鐘後再試。";
+                } else if (error.message === "PermissionDenied") {
+                     errorBubble.textContent = "🚫 權限不足。請檢查 Google Cloud 專案是否已啟用 Generative Language API。";
                 } else {
-                     errorBubble.textContent = "連線發生錯誤。看來目前的 API Key 無法存取可用的模型，請稍後再試。";
+                     errorBubble.textContent = "連線失敗。請按 F12 檢查 Console，可能是 API Key 權限或專案額度問題。";
                 }
                 
                 messageContainer.appendChild(errorBubble);
