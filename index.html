@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Markdown Parser for AI responses -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Canvas Confetti (For Easter Egg) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -30,6 +32,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class', // 啟用 class 模式的 Dark Mode
             theme: {
                 extend: {
                     fontFamily: {
@@ -49,6 +52,21 @@
                     boxShadow: {
                         'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
                         'glow': '0 0 20px rgba(59, 130, 246, 0.5)',
+                    },
+                    animation: {
+                        'bounce-slight': 'bounce-slight 2s infinite',
+                        'spin-fast': 'spin 0.5s ease-in-out',
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        'bounce-slight': {
+                            '0%, 100%': { transform: 'translateY(-5%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5) translate(-50%, -50%)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translate(-50%, -50%)' },
+                        }
                     }
                 }
             }
@@ -58,6 +76,13 @@
         body {
             background-color: #f3f4f6;
             color: #111827;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Dark Mode Body Transition */
+        html.dark body {
+            background-color: #111827; /* gray-900 */
+            color: #f3f4f6;
         }
 
         /* 導航列樣式 */
@@ -69,6 +94,12 @@
             padding: 0.5rem;
             display: inline-flex;
             gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        html.dark .nav-pill {
+            background: rgba(31, 41, 55, 0.9); /* gray-800 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
         
         .nav-item {
@@ -83,14 +114,27 @@
             font-size: 0.95rem;
         }
         
+        html.dark .nav-item {
+            color: #9ca3af; /* gray-400 */
+        }
+        
         .nav-item:hover {
             color: #111827;
+        }
+        
+        html.dark .nav-item:hover {
+            color: #ffffff;
         }
 
         .nav-item.active {
             background-color: #111827;
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        html.dark .nav-item.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: #ffffff;
         }
 
         /* 打字機效果光標 */
@@ -124,6 +168,12 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        html.dark .btn-black {
+            background-color: #3b82f6; /* blue-500 in dark mode for contrast */
+            color: white;
         }
         .btn-black:hover {
             transform: translateY(-2px);
@@ -142,9 +192,18 @@
             align-items: center;
             gap: 0.5rem;
         }
+        html.dark .btn-outline {
+            background-color: transparent;
+            color: #ffffff;
+            border-color: #4b5563;
+        }
         .btn-outline:hover {
             border-color: #111827;
             background-color: #f9fafb;
+        }
+        html.dark .btn-outline:hover {
+            border-color: #ffffff;
+            background-color: rgba(255,255,255,0.1);
         }
 
         /* 專案卡片標籤 */
@@ -155,6 +214,45 @@
             border-radius: 0.5rem;
             font-size: 0.8rem;
             font-weight: 600;
+        }
+        html.dark .tech-tag {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa; /* lighter blue */
+        }
+        
+        /* 可互動的技能標籤 */
+        .interactive-tag {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        html.dark .interactive-tag {
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .interactive-tag:hover {
+            background-color: #eff6ff;
+            color: #3b82f6;
+            border-color: #bfdbfe;
+            transform: scale(1.05);
+        }
+        html.dark .interactive-tag:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-color: #1e3a8a;
+        }
+        .interactive-tag i {
+            font-size: 0.75rem;
+            opacity: 0.5;
         }
         
         /* 聯絡表單輸入框 */
@@ -167,10 +265,19 @@
             outline: none;
             transition: all 0.3s;
         }
+        html.dark .form-input {
+            background-color: #374151; /* gray-700 */
+            border-color: #4b5563; /* gray-600 */
+            color: #ffffff;
+        }
         .form-input:focus {
             border-color: #3b82f6;
             background-color: white;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        html.dark .form-input:focus {
+            background-color: #1f2937; /* gray-800 */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
         }
 
         /* Modal 動畫 */
@@ -214,6 +321,11 @@
             font-size: 0.9rem;
             border: 1px solid #e5e7eb;
         }
+        html.dark .chat-bubble-ai {
+            background-color: #374151; /* gray-700 */
+            color: #e5e7eb; /* gray-200 */
+            border-color: #4b5563;
+        }
         .typing-dot {
             animation: typing 1.4s infinite ease-in-out both;
             height: 6px;
@@ -229,24 +341,451 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
+
+        /* Custom Scrollbar for Modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        html.dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #6b7280;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Toast Notification */
+        #skill-toast {
+            position: fixed;
+            bottom: 6rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background-color: #111827;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 90vw;
+            width: max-content;
+            text-align: center;
+        }
+        html.dark #skill-toast {
+            background-color: #ffffff;
+            color: #111827;
+        }
+        #skill-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        
+        /* Spin Animation */
+        .spin-click {
+            animation: spin-anim 0.8s ease-in-out;
+        }
+        @keyframes spin-anim {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Level Badge */
+        .level-badge {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #111827;
+            z-index: 40;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: default;
+        }
+        html.dark .level-badge {
+            background: rgba(31, 41, 55, 0.9);
+            color: #ffffff;
+            border-color: rgba(75, 85, 99, 0.5);
+        }
+        .level-badge:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .level-icon {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Level Up Overlay */
+        .levelup-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(17, 24, 39, 0.95);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 2rem;
+            text-align: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            min-width: 300px;
+        }
+        html.dark .levelup-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            color: #111827;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        html.dark .levelup-overlay p {
+            color: #4b5563;
+        }
+        html.dark .levelup-overlay .text-yellow-400 {
+            color: #d97706; /* darker yellow for visibility on white */
+            border-color: rgba(217, 119, 6, 0.3);
+        }
+        html.dark .levelup-overlay button {
+            background-color: #111827;
+            color: white;
+        }
+        html.dark .levelup-overlay button:hover {
+            background-color: #1f2937;
+        }
+        .levelup-overlay.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+        .levelup-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fbbf24;
+            animation: bounce-slight 1s infinite;
+        }
+
+        /* ============= Smart Moth Button (Send Message) ============= */
+        .btn-uiverse {
+            font-family: inherit;
+            font-size: 18px;
+            background: linear-gradient(to bottom, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.8em 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-uiverse span {
+            display: block;
+            margin-left: 0.4em;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+        .btn-uiverse svg {
+            display: block;
+            transform-origin: center center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .svg-wrapper { display: block; }
+        .btn-uiverse:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+        }
+        .btn-uiverse:hover .svg-wrapper {
+            animation: fly-1 0.6s ease-in-out infinite alternate;
+        }
+        .btn-uiverse:hover svg {
+            transform: translateX(2.5em) rotate(45deg) scale(1.1);
+        }
+        .btn-uiverse:hover span {
+            transform: translateX(8em); opacity: 0;
+        }
+        .btn-uiverse:active {
+            transform: scale(0.95);
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        @keyframes fly-1 {
+            from { transform: translateY(0.1em); }
+            to { transform: translateY(-0.1em); }
+        }
+
+        /* ============= Dark Mode Toggle (Fluffy Robin 48) ============= */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FDB813'%3E%3Cpath d='M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z' /%3E%3C/svg%3E");
+            background-size: 18px 18px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        input:checked + .slider {
+            background-color: #111827; /* Dark bg */
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239CA3AF'%3E%3Cpath fill-rule='evenodd' d='M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z' clip-rule='evenodd' /%3E%3C/svg%3E");
+        }
+
+        /* ============= New Back To Top Button (Afraid Falcon 17 Style) ============= */
+        .btn-falcon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgb(20, 20, 20);
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+            cursor: pointer;
+            transition-duration: 0.3s;
+            overflow: hidden;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 30;
+            text-decoration: none !important;
+        }
+        html.dark .btn-falcon {
+            background-color: #374151; 
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+        }
+        .svgIcon {
+            width: 12px;
+            transition-duration: 0.3s;
+        }
+        .svgIcon path { fill: white; }
+        .btn-falcon:hover {
+            width: 140px;
+            border-radius: 50px;
+            transition-duration: 0.3s;
+            background-color: #3b82f6; 
+            align-items: center;
+        }
+        .btn-falcon:hover .svgIcon {
+            width: 20px;
+            transition-duration: 0.3s;
+            transform: translateY(60%);
+            transform: rotate(360deg);
+        }
+        .btn-falcon::before {
+            display: none;
+            content: "Back to Top";
+            color: white;
+            transition-duration: 0.3s;
+            font-size: 2px;
+        }
+        .btn-falcon:hover::before {
+            display: block;
+            padding-right: 10px;
+            font-size: 13px;
+            opacity: 1;
+            transform: translateY(0px);
+            transition-duration: 0.3s;
+        }
+
+        /* ============= Quiz Modal Styles ============= */
+        .quiz-option {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            background: white;
+            transition: all 0.2s;
+            color: #374151;
+        }
+        html.dark .quiz-option {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #d1d5db;
+        }
+        .quiz-option:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        html.dark .quiz-option:hover {
+            border-color: #3b82f6;
+            background-color: #111827;
+        }
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #15803d;
+        }
+        html.dark .quiz-option.correct {
+            background-color: #064e3b;
+            color: #86efac;
+        }
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            color: #b91c1c;
+        }
+        html.dark .quiz-option.wrong {
+            background-color: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        /* ============= New Online Preview Button (Tiny Chipmunk 51 Style) ============= */
+        .btn-chipmunk {
+            padding: 0.8em 1.8em;
+            border: 2px solid #3b82f6; 
+            position: relative;
+            overflow: hidden;
+            background-color: transparent;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: .3s;
+            z-index: 1;
+            font-family: inherit;
+            color: #3b82f6;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none !important;
+        }
+
+        .btn-chipmunk::before {
+            content: '';
+            width: 0;
+            height: 500%; /* 增加高度以確保覆蓋 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            background: #3b82f6;
+            transition: .5s ease;
+            display: block;
+            z-index: -1;
+        }
+
+        .btn-chipmunk:hover::before {
+            width: 600%; /* 增加寬度以確保覆蓋 */
+        }
+
+        .btn-chipmunk:hover {
+            color: #ffffff; 
+            box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Dark Mode Adjustments for Chipmunk Button */
+            background: #60a5fa;
+        }
+        html.dark .btn-chipmunk:hover {
+            color: #111827;
+        }
     </style>
 </head>
 <body class="antialiased pb-10">
 
+    <!-- 深色模式切換按鈕 -->
+    <div class="fixed top-6 right-6 z-50">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
     <!-- 導航列 -->
-    <div class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
-        <nav class="nav-pill">
+    <div class="fixed top-6 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
+        <nav class="nav-pill pointer-events-auto">
             <a href="#home" class="nav-item active">
-                <i class="fas fa-home text-sm"></i> <span>首頁</span>
+                <i class="fas fa-home text-sm"></i> <span class="hidden sm:inline">首頁</span>
             </a>
             <a href="#about" class="nav-item">
-                <i class="fas fa-user text-sm"></i> <span>關於我</span>
+                <i class="fas fa-user text-sm"></i> <span class="hidden sm:inline">關於我</span>
             </a>
             <a href="#projects" class="nav-item">
-                <i class="fas fa-briefcase text-sm"></i> <span>作品集</span>
+                <i class="fas fa-briefcase text-sm"></i> <span class="hidden sm:inline">作品集</span>
             </a>
             <a href="#contact" class="nav-item">
-                <i class="fas fa-paper-plane text-sm"></i> <span>聯絡我</span>
+                <i class="fas fa-paper-plane text-sm"></i> <span class="hidden sm:inline">聯絡我</span>
             </a>
         </nav>
     </div>
@@ -258,41 +797,47 @@
         <section id="home" class="min-h-[80vh] flex flex-col-reverse lg:flex-row items-center justify-between gap-12 mb-20">
             <!-- 左側文字 -->
             <div class="lg:w-1/2 space-y-6 text-center lg:text-left">
-                <div class="inline-block px-4 py-2 bg-white rounded-full text-sm font-semibold text-secondary shadow-sm mb-2 border border-gray-100">
+                <div class="inline-block px-4 py-2 bg-white dark:bg-gray-800 rounded-full text-sm font-semibold text-secondary dark:text-gray-300 shadow-sm mb-2 border border-gray-100 dark:border-gray-700 animate-bounce-slight cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors" onclick="alert('你發現了這個會跳動的標籤！👋')">
                     👋 歡迎給予建議
                 </div>
-                <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-primary">
+                <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-primary dark:text-white">
                     嗨，我是 Aron<br>
                     <!-- 打字機文字容器 -->
-                    <span class="text-blue-600 typing-cursor" id="typewriter"></span>
+                    <span class="text-blue-600 dark:text-blue-400 typing-cursor" id="typewriter"></span>
                 </h1>
-                <p class="text-lg text-secondary leading-relaxed max-w-lg mx-auto lg:mx-0">
+                <p class="text-lg text-secondary dark:text-gray-400 leading-relaxed max-w-lg mx-auto lg:mx-0">
                     我善於運用 AI 工具輔助程式學習，將創意轉化為實際的應用程式。致力於探索 AI 與軟體開發結合的無限可能。
                 </p>
                 
                 <!-- 按鈕組 -->
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
-                    <a href="#contact" class="btn-black">
+                    <a href="#contact" class="btn-black magnetic-btn">
                         <i class="fas fa-paper-plane"></i> 給予建議
                     </a>
-                    <a href="#projects" class="btn-outline">
+                    <a href="#projects" class="btn-outline magnetic-btn">
                         <i class="fas fa-download"></i> 查看作品
                     </a>
                 </div>
 
                 <!-- 社群連結 -->
-                <div class="flex justify-center lg:justify-start gap-6 pt-4 text-secondary">
-                    <!-- 信箱連結：點擊平滑滾動到聯絡區塊 -->
-                    <a href="#contact" class="hover:text-blue-600 transition-colors text-2xl" title="前往聯絡區塊"><i class="far fa-envelope"></i></a>
+                <div class="flex justify-center lg:justify-start gap-6 pt-4 text-secondary dark:text-gray-400">
+                    <a href="#contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-2xl" title="前往聯絡區塊"><i class="far fa-envelope"></i></a>
+                    <a href="https://github.com/aronccc" target="_blank" class="hover:text-black dark:hover:text-white transition-colors text-2xl" title="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+                
+                <div class="text-xs text-gray-400 dark:text-gray-500 mt-4">
+                    💡 提示：試著在鍵盤輸入 ↓ ↓ ↓ ↓ ↓ → → 會有驚喜喔！
                 </div>
             </div>
 
             <!-- 右側圖片 -->
             <div class="lg:w-1/2 flex justify-center lg:justify-end relative">
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] lg:w-[450px] lg:h-[450px] bg-blue-100 rounded-full blur-3xl -z-10"></div>
-                <div class="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] bg-white rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
-                    <!-- 使用動漫風格 Placeholder -->
-                    <img src="IMG_20251203_235357_165.jpg" alt="Aron Avatar" class="w-full h-full object-cover">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] lg:w-[450px] lg:h-[450px] bg-blue-100 dark:bg-blue-900/30 rounded-full blur-3xl -z-10"></div>
+                <div class="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] bg-white dark:bg-gray-800 rounded-full border-4 border-white dark:border-gray-700 shadow-2xl overflow-hidden flex items-center justify-center cursor-pointer transition-transform hover:scale-105" 
+                     id="avatar-container"
+                     onclick="spinAvatar()"
+                     title="點我轉圈圈！">
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Aron&backgroundColor=b6e3f4" alt="Aron Avatar" class="w-full h-full object-cover">
                 </div>
             </div>
         </section>
@@ -300,61 +845,61 @@
         <!-- About Section -->
         <section id="about" class="mb-32 scroll-mt-28">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-primary">關於我</h2>
+                <h2 class="text-3xl font-bold text-primary dark:text-white">關於我</h2>
                 <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
+                <p class="text-sm text-gray-400 mt-2">💡 小提示：點擊下方的技能標籤，聽聽 AI 怎麼說！</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- 卡片 1: 簡介 (佔 2 欄) -->
-                <div class="bg-white p-8 rounded-4xl shadow-soft hover-card border border-gray-100 md:col-span-2 lg:col-span-2">
+                <!-- 卡片 1: 簡介 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 md:col-span-2 lg:col-span-2">
                     <div class="flex items-start gap-4">
-                        <div class="p-3 bg-blue-50 rounded-2xl text-blue-600 shrink-0">
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400 shrink-0">
                             <i class="fas fa-quote-left text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold mb-3">將想法變為真實</h3>
-                            <p class="text-secondary leading-relaxed">
+                            <h3 class="text-xl font-bold mb-3 dark:text-white">將想法變為真實</h3>
+                            <p class="text-secondary dark:text-gray-300 leading-relaxed">
                                 我是一名高中生，利用AI將天馬行空的想法變為真實。我的目標是創造既實用又具備吸引力的軟體。
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 卡片 2: 開發技能 (佔 1 欄) -->
-                <div class="bg-white p-8 rounded-4xl shadow-soft hover-card border border-gray-100">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="p-3 bg-purple-50 rounded-2xl text-purple-600">
-                            <i class="fas fa-code text-xl"></i>
+                <!-- 卡片 2: 開發技能 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-2xl text-purple-600 dark:text-purple-400">
+                                <i class="fas fa-code text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold dark:text-white">開發技能</h3>
                         </div>
-                        <h3 class="text-lg font-bold">開發技能</h3>
+                        <button onclick="startQuiz()" class="text-xs bg-gradient-to-r from-pink-500 to-orange-400 text-white px-3 py-1 rounded-full font-bold shadow-md hover:scale-105 transition-transform animate-pulse-slow">
+                            ⚔️ 挑戰我
+                        </button>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium">HTML</span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium">CSS</span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium">JavaScript</span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium">Python</span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium">C++</span>
+                        <span class="interactive-tag" onclick="explainSkill('HTML')">HTML <i class="fas fa-magic"></i></span>
+                        <span class="interactive-tag" onclick="explainSkill('CSS')">CSS <i class="fas fa-magic"></i></span>
+                        <span class="interactive-tag" onclick="explainSkill('JavaScript')">JavaScript <i class="fas fa-magic"></i></span>
+                        <span class="interactive-tag" onclick="explainSkill('Python')">Python <i class="fas fa-magic"></i></span>
+                        <span class="interactive-tag" onclick="explainSkill('C++')">C++ <i class="fas fa-magic"></i></span>
                     </div>
                 </div>
 
-                <!-- 卡片 3: 使用工具 (佔 1 欄) -->
-                <div class="bg-white p-8 rounded-4xl shadow-soft hover-card border border-gray-100">
+                <!-- 卡片 3: 使用工具 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                        <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl text-indigo-600 dark:text-indigo-400">
                             <i class="fas fa-toolbox text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold">使用工具</h3>
+                        <h3 class="text-lg font-bold dark:text-white">使用工具</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium flex items-center gap-1">
-                            <i class="fas fa-star text-xs"></i> Gemini
-                        </span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium flex items-center gap-1">
-                            <i class="fas fa-code text-xs"></i> VS Code
-                        </span>
-                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium flex items-center gap-1">
-                            <i class="fab fa-github text-xs"></i> GitHub
-                        </span>
+                        <span class="interactive-tag" onclick="explainSkill('Google Gemini AI')"><i class="fas fa-star text-xs"></i> Gemini</span>
+                        <span class="interactive-tag" onclick="explainSkill('VS Code')"><i class="fas fa-code text-xs"></i> VS Code</span>
+                        <span class="interactive-tag" onclick="explainSkill('GitHub')"><i class="fab fa-github text-xs"></i> GitHub</span>
                     </div>
                 </div>
             </div>
@@ -363,934 +908,737 @@
         <!-- Projects Section -->
         <section id="projects" class="mb-32 scroll-mt-28">
             <div class="text-center mb-16">
-                <span class="text-blue-600 font-semibold tracking-wider text-sm uppercase">Portfolio</span>
-                <h2 class="text-4xl font-bold text-primary mt-2">精選作品</h2>
-                <p class="text-secondary mt-4 max-w-2xl mx-auto">
+                <span class="text-blue-600 dark:text-blue-400 font-semibold tracking-wider text-sm uppercase">Portfolio</span>
+                <h2 class="text-4xl font-bold text-primary dark:text-white mt-2">精選作品</h2>
+                <p class="text-secondary dark:text-gray-400 mt-4 max-w-2xl mx-auto">
                     展示我最近的專案，包含全端開發、現代化框架應用與創意解決方案。
                 </p>
             </div>
 
-            <!-- AI 作品分類 (增加到 8 個作品) -->
+            <!-- AI 作品分類 -->
             <div class="mb-16">
                 <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
-                        <i class="fas fa-robot text-blue-600"></i> AI & 實作作品
+                    <h3 class="text-2xl font-bold text-primary dark:text-white flex items-center gap-2">
+                        <i class="fas fa-robot text-blue-600 dark:text-blue-400"></i> AI & 實作作品
                     </h3>
-                    <div class="h-px bg-gray-200 flex-grow"></div>
+                    <div class="h-px bg-gray-200 dark:bg-gray-700 flex-grow"></div>
                 </div>
 
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     
-                    <!-- Project 1: 標準差計算機 (保持正常) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-blue-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                    <!-- Project 1 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-blue-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
                             <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🧮</span>
                         </div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">標準差計算機</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">擁有標準差計算 & X-Y 關係圖分析工具箱。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">標準差計算機</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">擁有標準差計算 & X-Y 關係圖分析工具箱。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">HTML</span>
-                                <span class="tech-tag">CSS</span>
-                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">React</span>
                             </div>
                             <div class="mt-auto">
-                                <a href="https://aronccc.github.io/-Aronsgsh/" target="_blank" class="w-full py-2 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                <a href="https://aronccc.github.io/-Aronsgsh/" target="_blank" class="btn-chipmunk">
                                     <i class="fas fa-external-link-alt"></i> 線上預覽
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Project 2: 3D 射擊遊戲 (保持正常) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-gray-100 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                    <!-- Project 2 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
                             <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎯</span>
                         </div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">3D 射擊遊戲</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">擁有技能玩法的第一人稱3D射擊遊戲。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">3D 射擊遊戲</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">擁有技能玩法的第一人稱3D射擊遊戲。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">Three.js</span>
-                                <span class="tech-tag">WebGL</span>
+                                <span class="tech-tag">Three.js</span><span class="tech-tag">WebGL</span>
                             </div>
                             <div class="mt-auto">
-                                <a href="https://aronccc.github.io/-Aronsshooter/" target="_blank" class="w-full py-2 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                <a href="https://aronccc.github.io/-Aronsshooter/" target="_blank" class="btn-chipmunk">
                                     <i class="fas fa-external-link-alt"></i> 線上預覽
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Project 3: 中國象棋 (原 Project 9，移動至此) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-orange-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                    <!-- Project 3 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-orange-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
                             <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">♟️</span>
                         </div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">中國象棋</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">經典雙人對弈遊戲，體驗傳統棋藝的樂趣。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">中國象棋</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">經典雙人對弈遊戲，體驗傳統棋藝的樂趣。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">HTML</span>
-                                <span class="tech-tag">CSS</span>
-                                <span class="tech-tag">JS</span>
+                                <span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">JS</span>
                             </div>
                             <div class="mt-auto">
-                                <a href="https://aronccc.github.io/Chinesechess/" target="_blank" class="w-full py-2 bg-blue-600 text-white rounded-xl text-center text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                <a href="https://aronccc.github.io/Chinesechess/" target="_blank" class="btn-chipmunk">
                                     <i class="fas fa-external-link-alt"></i> 線上預覽
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Project 4: 待辦事項清單 (原 Project 3，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-yellow-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">📝</span>
-                        </div>
+                    <!-- Project 4 (Todo) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-yellow-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">📝</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">待辦事項清單</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">支援拖放排序與本地儲存的任務管理工具。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">待辦事項清單</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">支援拖放排序與本地儲存的任務管理工具。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">Vue.js</span>
-                                <span class="tech-tag">LocalStorage</span>
+                                <span class="tech-tag">Vue.js</span><span class="tech-tag">LocalStorage</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
-                            </div>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
                         </div>
                     </div>
 
-                    <!-- Project 5: 天氣預報 (原 Project 4，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-sky-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">⛅</span>
-                        </div>
+                    <!-- Project 5 (Weather) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-sky-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">⛅</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">即時天氣 App</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">串接 OpenWeather API，提供全球天氣資訊。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">即時天氣 App</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">串接 OpenWeather API，提供全球天氣資訊。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">API</span>
-                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">API</span><span class="tech-tag">JavaScript</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
-                            </div>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
                         </div>
                     </div>
 
-                    <!-- Project 6: 電商網站 (原 Project 5，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-purple-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🛒</span>
-                        </div>
+                    <!-- Project 6 (Ecommerce) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-purple-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🛒</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">極簡電商</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">具備購物車功能的商品展示網站。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">極簡電商</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">具備購物車功能的商品展示網站。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">React</span>
-                                <span class="tech-tag">Redux</span>
+                                <span class="tech-tag">React</span><span class="tech-tag">Redux</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
-                            </div>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
                         </div>
                     </div>
 
-                    <!-- Project 7: 個人記帳本 (原 Project 6，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-green-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">💰</span>
-                        </div>
+                    <!-- Project 7 (Expense) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-green-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">💰</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">個人記帳本</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">可視化收支圖表，輕鬆管理個人財務。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">個人記帳本</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">可視化收支圖表，輕鬆管理個人財務。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">Chart.js</span>
-                                <span class="tech-tag">Vue</span>
+                                <span class="tech-tag">Chart.js</span><span class="tech-tag">Vue</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
-                            </div>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
                         </div>
                     </div>
 
-                    <!-- Project 8: 電影搜尋網 (原 Project 7，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-red-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎬</span>
-                        </div>
+                    <!-- Project 8 (Movie) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-red-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🎬</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">電影搜尋網</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">搜尋電影資訊，查看評分與介紹。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">電影搜尋網</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">搜尋電影資訊，查看評分與介紹。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">TMDB API</span>
-                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">TMDB API</span><span class="tech-tag">React</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
-                            </div>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
                         </div>
                     </div>
 
-                    <!-- Project 9: 貪吃蛇遊戲 (原 Project 8，順延) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-emerald-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🐍</span>
-                        </div>
+                    <!-- Project 9 (Snake) -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-emerald-50 dark:bg-gray-700 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><span class="text-9xl group-hover:scale-110 transition-transform duration-500 select-none">🐍</span></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">貪吃蛇遊戲</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">經典遊戲復刻，使用 Canvas 技術繪製。</p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">貪吃蛇遊戲</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">經典遊戲復刻，使用 Canvas 技術繪製。</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="tech-tag">HTML5 Canvas</span>
-                                <span class="tech-tag">JS</span>
+                                <span class="tech-tag">HTML5 Canvas</span><span class="tech-tag">JS</span>
                             </div>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-tools"></i> 開發中
-                                </button>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-tools"></i> 開發中</button></div>
+                        </div>
+                    </div>
+
+                    <!-- New Project Idea Generator Card -->
+                    <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] rounded-4xl shadow-soft hover-card group flex flex-col h-full cursor-pointer" onclick="generateProjectIdea(this)">
+                        <div class="bg-white dark:bg-gray-800 h-full w-full rounded-[1.9rem] p-4 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-white/10 dark:bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                            <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white text-3xl mb-4 shadow-lg animate-bounce-slight">
+                                💡
+                            </div>
+                            <h3 id="idea-title" class="text-xl font-bold text-gray-800 dark:text-white mb-2">缺乏靈感嗎？</h3>
+                            <p id="idea-desc" class="text-secondary dark:text-gray-300 text-sm">點擊卡片，讓 AI 為您的下一個專案提供絕佳點子！</p>
+                            <div id="idea-loading" class="hidden mt-3">
+                                <i class="fas fa-circle-notch fa-spin text-indigo-500 text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>
-
-            <!-- FreeCodeCamp 作品分類 (升級為卡片樣式) -->
+            <!-- FreeCodeCamp (Condensed) -->
             <div>
                 <div class="flex items-center gap-4 mb-8">
-                    <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
-                        <i class="fab fa-free-code-camp text-black"></i> FreeCodeCamp 認證
+                    <h3 class="text-2xl font-bold text-primary dark:text-white flex items-center gap-2">
+                        <i class="fab fa-free-code-camp text-black dark:text-white"></i> FreeCodeCamp 認證
                     </h3>
-                    <div class="h-px bg-gray-200 flex-grow"></div>
+                    <div class="h-px bg-gray-200 dark:bg-gray-700 flex-grow"></div>
                 </div>
-
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    <!-- 認證卡片 1: 響應式網頁設計 (修改此處) -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-indigo-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
+                    <!-- RWD Cert -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-indigo-50 dark:bg-indigo-900/30 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
                             <i class="fab fa-html5 text-8xl text-indigo-500 group-hover:scale-110 transition-transform duration-500"></i>
                         </div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">響應式網頁設計</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
-                                掌握 HTML5、CSS3、Flexbox 與 Grid，製作適應各種螢幕的網頁。
-                            </p>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">響應式網頁設計</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">掌握 HTML5、CSS3、Flexbox 與 Grid。</p>
                             <div class="mt-auto">
-                                <!-- 修改：按鈕觸發 Modal -->
-                                <button onclick="openModal('fcc-rwd-modal')" class="w-full py-2 bg-black text-white rounded-xl text-center text-sm font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                                    <i class="fas fa-certificate"></i> 作品預覽
-                                </button>
+                                <button onclick="openModal('fcc-rwd-modal')" class="w-full py-2 bg-black dark:bg-gray-700 text-white rounded-xl text-center text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"><i class="fas fa-certificate"></i> 作品預覽</button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 認證卡片 2 -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-yellow-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <i class="fab fa-js text-8xl text-yellow-500 group-hover:scale-110 transition-transform duration-500"></i>
-                        </div>
+                    <!-- JS Cert -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-yellow-50 dark:bg-yellow-900/30 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><i class="fab fa-js text-8xl text-yellow-500 group-hover:scale-110 transition-transform duration-500"></i></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">JavaScript 演算法</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
-                                深入理解 JS 核心概念，學習基礎演算法與資料結構。
-                            </p>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-certificate"></i> 作品預覽
-                                </button>
-                            </div>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">JavaScript 演算法</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">深入理解 JS 核心概念。</p>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-certificate"></i> 作品預覽</button></div>
                         </div>
                     </div>
-
-                    <!-- 認證卡片 3 -->
-                    <div class="bg-white p-4 rounded-4xl shadow-soft hover-card border border-gray-100 group flex flex-col h-full">
-                        <div class="bg-blue-50 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0">
-                            <i class="fab fa-react text-8xl text-blue-500 group-hover:scale-110 transition-transform duration-500"></i>
-                        </div>
+                    <!-- Frontend Libs -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-4xl shadow-soft hover-card border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                        <div class="bg-blue-50 dark:bg-blue-900/30 rounded-3xl overflow-hidden aspect-[4/3] mb-5 relative flex items-center justify-center shrink-0"><i class="fab fa-react text-8xl text-blue-500 group-hover:scale-110 transition-transform duration-500"></i></div>
                         <div class="px-2 pb-2 flex-grow flex flex-col">
-                            <h3 class="text-lg font-bold text-primary mb-2">前端開發庫</h3>
-                            <p class="text-secondary text-sm mb-4 line-clamp-2 flex-grow">
-                                學習 React、Redux、Sass 等熱門技術，構建單頁應用程式。
-                            </p>
-                            <div class="mt-auto">
-                                <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2">
-                                    <i class="fas fa-certificate"></i> 作品預覽
-                                </button>
-                            </div>
+                            <h3 class="text-lg font-bold text-primary dark:text-white mb-2">前端開發庫</h3>
+                            <p class="text-secondary dark:text-gray-400 text-sm mb-4 line-clamp-2 flex-grow">學習 React、Redux、Sass 等熱門技術。</p>
+                            <div class="mt-auto"><button disabled class="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl text-center text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"><i class="fas fa-certificate"></i> 作品預覽</button></div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </section>
 
         <!-- Contact Section -->
         <section id="contact" class="mb-20 scroll-mt-28">
-            <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-soft border border-gray-100">
+            <div class="bg-white dark:bg-gray-800 rounded-[3rem] p-8 md:p-16 shadow-soft border border-gray-100 dark:border-gray-700">
                 <div class="flex flex-col lg:flex-row gap-12 lg:gap-20">
-                    
-                    <!-- 左側資訊 -->
                     <div class="lg:w-1/3 space-y-8">
                         <div>
-                            <span class="text-blue-600 font-bold tracking-widest text-sm uppercase">Contact</span>
-                            <h2 class="text-4xl font-bold text-primary mt-2 mb-4">與我聯繫</h2>
-                            <p class="text-secondary leading-relaxed">
-                                我隨時樂意討論新專案、創意點子或擔任技術顧問。歡迎隨時聯繫！
-                            </p>
+                            <span class="text-blue-600 dark:text-blue-400 font-bold tracking-widest text-sm uppercase">Contact</span>
+                            <h2 class="text-4xl font-bold text-primary dark:text-white mt-2 mb-4">與我聯繫</h2>
+                            <p class="text-secondary dark:text-gray-400 leading-relaxed">我隨時樂意討論新專案、創意點子或擔任技術顧問。歡迎隨時聯繫！</p>
                         </div>
-
                         <div class="space-y-6">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xl">
-                                    <i class="far fa-envelope"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-secondary">發送郵件</p>
-                                    <a href="mailto:aronforcode@gmail.com" class="font-bold text-primary hover:text-blue-600">aronforcode@gmail.com</a>
-                                </div>
+                                <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl"><i class="far fa-envelope"></i></div>
+                                <div><p class="text-sm text-secondary dark:text-gray-400">發送郵件</p><a href="mailto:aronforcode@gmail.com" class="font-bold text-primary dark:text-white hover:text-blue-600 dark:hover:text-blue-400">aronforcode@gmail.com</a></div>
                             </div>
                         </div>
-
-                        <!-- 複製 Email 按鈕 -->
-                        <button onclick="copyEmail()" class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-black transition-colors group">
-                            <i class="far fa-copy group-hover:scale-110 transition-transform"></i> <span id="copy-text">複製 Email 地址</span>
-                        </button>
+                        <button onclick="copyEmail()" class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors group"><i class="far fa-copy group-hover:scale-110 transition-transform"></i> <span id="copy-text">複製 Email 地址</span></button>
                     </div>
-
-                    <!-- 右側表單 -->
-                    <div class="lg:w-2/3 bg-gray-50 rounded-3xl p-8 lg:p-10">
-                        <!-- 成功訊息 -->
+                    <div class="lg:w-2/3 bg-gray-50 dark:bg-gray-700/50 rounded-3xl p-8 lg:p-10 relative">
                         <div id="success-message" class="hidden h-full flex flex-col items-center justify-center text-center py-10">
-                            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
-                                <i class="fas fa-check text-2xl"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-primary mb-2">訊息已發送！</h3>
-                            <p class="text-secondary mb-6">感謝您的聯繫，我會盡快回覆。</p>
-                            <button onclick="resetForm()" class="text-blue-600 font-bold hover:underline">發送另一則訊息</button>
+                            <div class="w-16 h-16 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4"><i class="fas fa-check text-2xl"></i></div>
+                            <h3 class="text-2xl font-bold text-primary dark:text-white mb-2">訊息已發送！</h3>
+                            <button onclick="resetForm()" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">發送另一則訊息</button>
                         </div>
-
                         <form id="contact-form" class="space-y-6">
                             <div class="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">您的姓名</label>
-                                    <input type="text" name="name" id="form-name" class="form-input" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">您的 Email</label>
-                                    <input type="email" name="email" id="form-email" class="form-input" required>
-                                </div>
+                                <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">您的姓名</label><input type="text" name="name" id="form-name" class="form-input" required></div>
+                                <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">您的 Email</label><input type="email" name="email" id="form-email" class="form-input" required></div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">主旨</label>
-                                <input type="text" name="subject" id="form-subject" class="form-input" required>
+                            <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">主旨</label><input type="text" name="subject" id="form-subject" class="form-input" required></div>
+                            <div class="relative">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">訊息內容</label>
+                                <textarea name="message" id="form-message" rows="5" class="form-input resize-none" placeholder="請告訴我您的建議..." required></textarea>
+                                <button type="button" onclick="generateEmailDraft()" title="AI 幫我寫" class="absolute bottom-4 right-4 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"><i class="fas fa-magic text-sm"></i></button>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">訊息內容</label>
-                                <textarea name="message" id="form-message" rows="4" class="form-input resize-none" placeholder="請告訴我您的建議..." required></textarea>
-                            </div>
-                            <button type="submit" id="submit-btn" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all hover:shadow-lg flex items-center justify-center gap-2">
-                                發送訊息 <i class="fas fa-paper-plane"></i>
+                            <div id="form-error-msg" class="text-red-500 text-sm hidden text-center"></div>
+                            <button type="submit" id="submit-btn" class="btn-uiverse">
+                                <div class="svg-wrapper-1"><div class="svg-wrapper"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"></path><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path></svg></div></div><span>發送訊息</span>
                             </button>
                         </form>
                     </div>
-
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="text-center text-gray-400 text-sm py-8">
-            <p>&copy; 2025 Aron. 版權所有.</p>
-        </footer>
-
+        <footer class="text-center text-gray-400 text-sm py-8"><p>&copy; 2025 Aron. 版權所有.</p></footer>
     </main>
 
-    <!-- Modal 結構 (新增部分) -->
-    <div id="fcc-rwd-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
-        <!-- 黑色半透明背景 -->
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('fcc-rwd-modal')"></div>
-        
-        <!-- Modal 內容 -->
-        <div class="relative bg-white w-full max-w-5xl rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[85vh] flex flex-col animate-[modal-enter_0.3s_ease-out]">
-            
-            <!-- 標題與關閉按鈕 -->
-            <div class="flex justify-between items-center mb-6 shrink-0">
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeQuiz()"></div>
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-lg rounded-[2rem] shadow-2xl p-8 animate-[pop-in_0.4s_ease-out] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
-                        <i class="fab fa-html5 text-xl"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-400 rounded-full flex items-center justify-center text-white">
+                        <i class="fas fa-brain"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-primary">響應式網頁設計 - 課程作品</h3>
+                    <h3 class="text-xl font-bold text-primary dark:text-white">AI 技能挑戰</h3>
                 </div>
-                <button onclick="closeModal('fcc-rwd-modal')" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-                    <i class="fas fa-times text-gray-600"></i>
-                </button>
+                <button onclick="closeQuiz()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="quiz-loading" class="text-center py-8">
+                <div class="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-gray-500 dark:text-gray-400">Gemini 正在出題中...</p>
             </div>
 
-            <!-- 可捲動的 11 個作品區域 -->
+            <div id="quiz-content" class="hidden">
+                <p id="quiz-question" class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-6 leading-relaxed"></p>
+                <div id="quiz-options" class="space-y-3">
+                    <!-- Options will be injected here -->
+                </div>
+                <div id="quiz-result" class="mt-4 hidden p-4 rounded-xl text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Explanation Toast -->
+    <div id="skill-toast">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center shrink-0"><i class="fas fa-robot text-white text-xs"></i></div>
+            <p id="skill-toast-content" class="text-sm font-medium">AI 正在思考...</p>
+        </div>
+    </div>
+
+    <!-- Level Badge -->
+    <div id="level-badge" class="level-badge">
+        <div class="level-icon"><i class="fas fa-user"></i></div>
+        <div><div class="text-[10px] text-gray-500 uppercase tracking-wider">Current Level</div><div id="current-title" class="text-blue-600 dark:text-blue-400">LV.1 路過的路人</div></div>
+    </div>
+
+    <!-- Level Up Overlay -->
+    <div id="levelup-overlay" class="levelup-overlay">
+        <div class="levelup-icon"><i class="fas fa-crown"></i></div>
+        <h3 class="text-2xl font-bold mb-2">恭喜升級！🎉</h3>
+        <p class="text-gray-300 mb-4">獲得新稱號：</p>
+        <div id="new-level-title" class="text-xl font-bold text-yellow-400 mb-6 border-b-2 border-yellow-400/30 pb-2 inline-block">LV.5 探索者</div>
+        <button onclick="closeLevelUp()" class="block w-full py-2 bg-white text-gray-900 rounded-xl font-bold hover:bg-gray-100 transition-colors">太棒了！</button>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end">
+        <div id="ai-chat-window" class="hidden mb-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-[90vw] md:w-[350px] h-[500px] flex flex-col border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all origin-bottom-right">
+            <div class="bg-indigo-600 p-4 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2"><i class="fas fa-robot"></i><span class="font-bold">Aron's AI Assistant ✨</span></div>
+                <button onclick="toggleChat()" class="text-white hover:text-gray-200"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 space-y-4">
+                <div class="chat-bubble-ai"><p>你好！我是 Aron 的 AI 助手。你可以問我關於 Aron 的技能、專案，或是作品集的任何問題！✨</p></div>
+            </div>
+            <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex gap-2 shrink-0">
+                <input type="text" id="chat-input" placeholder="問我關於 Aron 的事情..." class="flex-1 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-full px-4 py-2 focus:outline-none focus:border-indigo-500 text-sm" onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-indigo-700 transition-colors flex-shrink-0"><i class="fas fa-paper-plane text-sm"></i></button>
+            </div>
+        </div>
+        <button onclick="toggleChat()" class="w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center text-2xl z-50 group"><i class="fas fa-robot group-hover:animate-pulse"></i></button>
+    </div>
+
+    <!-- Back to Top Button -->
+    <a href="#home" class="btn-falcon"><svg class="svgIcon" viewBox="0 0 384 512"><path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2l105.4 105.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path></svg></a>
+
+    <!-- FCC Modal -->
+    <div id="fcc-rwd-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('fcc-rwd-modal')"></div>
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-5xl rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[85vh] flex flex-col animate-[modal-enter_0.3s_ease-out]">
+            <div class="flex justify-between items-center mb-6 shrink-0">
+                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400"><i class="fab fa-html5 text-xl"></i></div><h3 class="text-2xl font-bold text-primary dark:text-white">響應式網頁設計 - 課程作品</h3></div>
+                <button onclick="closeModal('fcc-rwd-modal')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors"><i class="fas fa-times text-gray-600 dark:text-gray-300"></i></button>
+            </div>
             <div class="overflow-y-auto pr-2 custom-scrollbar">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    
-                    <!-- Item 1: 貓咪相冊應用 -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-1/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">🐱</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">貓咪相冊應用</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習 HTML</p>
-                    </a>
-
-                    <!-- Item 2: 咖啡店菜單 -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-2/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">☕</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">咖啡店菜單</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習基礎 CSS</p>
-                    </a>
-
-                    <!-- Item 3: 彩色筆 (原第4，遞補為第3) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-3/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">🖍️</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">彩色筆</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習 CSS 顏色</p>
-                    </a>
-
-                    <!-- Item 4: 註冊表單 (原第5，遞補為第4) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-4/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">📝</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">註冊表單</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習 HTML 表單</p>
-                    </a>
-
-                    <!-- Item 5: 調查表單 (原第6，遞補為第5) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-5/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">📋</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">調查表單</h4>
-                        <p class="text-xs text-gray-500 mt-1">Survey Form</p>
-                    </a>
-
-                    <!-- Item 6: 羅斯科繪畫 (原第7，遞補為第6) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-6/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">🎨</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">羅斯科繪畫</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習 CSS 盒子模型</p>
-                    </a>
-
-                    <!-- Item 7: 照片集 (原第8，遞補為第7) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-7/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">📷</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">照片集</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習 CSS 彈性盒子</p>
-                    </a>
-
-                    <!-- Item 8: 營養標籤 (原第9，遞補為第8) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-8/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">🏷️</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">營養標籤</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習排版</p>
-                    </a>
-
-                    <!-- Item 9: 小測驗 (原第10，遞補為第9) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-9/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">❓</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">小測驗</h4>
-                        <p class="text-xs text-gray-500 mt-1">學習無障礙</p>
-                    </a>
-
-                    <!-- Item 10: 致敬頁 (原第11，遞補為第10) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-10/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">🕯️</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">致敬頁</h4>
-                        <p class="text-xs text-gray-500 mt-1">Tribute Page</p>
-                    </a>
-
-                    <!-- Item 11: 技術文件 (原第3，移動到最後) -->
-                    <a href="https://aronccc.github.io/mypage-responsive-web-design-11/" target="_blank" class="group block bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-indigo-300 hover:shadow-md transition-all">
-                        <div class="aspect-video bg-white rounded-xl mb-3 flex items-center justify-center border border-gray-100 group-hover:bg-indigo-50 transition-colors">
-                            <span class="text-3xl">📄</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">技術文件</h4>
-                        <p class="text-xs text-gray-500 mt-1">Documentation</p>
-                    </a>
-
+                    <!-- Items -->
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-1/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">🐱</span></div><h4 class="font-bold text-gray-800 dark:text-white">貓咪相冊應用</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習 HTML</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-2/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">☕</span></div><h4 class="font-bold text-gray-800 dark:text-white">咖啡店菜單</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習基礎 CSS</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-3/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">🖍️</span></div><h4 class="font-bold text-gray-800 dark:text-white">彩色筆</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習 CSS 顏色</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-4/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">📝</span></div><h4 class="font-bold text-gray-800 dark:text-white">註冊表單</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習 HTML 表單</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-5/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">📋</span></div><h4 class="font-bold text-gray-800 dark:text-white">調查表單</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Survey Form</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-6/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">🎨</span></div><h4 class="font-bold text-gray-800 dark:text-white">羅斯科繪畫</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習 CSS 盒子模型</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-7/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">📷</span></div><h4 class="font-bold text-gray-800 dark:text-white">照片集</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習 CSS 彈性盒子</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-8/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">🏷️</span></div><h4 class="font-bold text-gray-800 dark:text-white">營養標籤</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習排版</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-9/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">❓</span></div><h4 class="font-bold text-gray-800 dark:text-white">小測驗</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">學習無障礙</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-10/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">🕯️</span></div><h4 class="font-bold text-gray-800 dark:text-white">致敬頁</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tribute Page</p></a>
+                    <a href="https://aronccc.github.io/mypage-responsive-web-design-11/" target="_blank" class="group block bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 hover:border-indigo-300 transition-all"><div class="aspect-video bg-white dark:bg-gray-600 rounded-xl mb-3 flex items-center justify-center border border-gray-100 dark:border-gray-600"><span class="text-3xl">📄</span></div><h4 class="font-bold text-gray-800 dark:text-white">技術文件</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Documentation</p></a>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- AI Chat Widget (New) -->
-    <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end">
-        <!-- Chat Window (Hidden by default) -->
-        <!-- 修正：加入 flex flex-col 確保子元素正確填滿 -->
-        <div id="ai-chat-window" class="hidden mb-4 bg-white rounded-2xl shadow-2xl w-[90vw] md:w-[350px] h-[500px] flex flex-col border border-gray-200 overflow-hidden transform transition-all origin-bottom-right">
-            <!-- Header -->
-            <div class="bg-indigo-600 p-4 text-white flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-robot"></i>
-                    <span class="font-bold">Aron's AI Assistant ✨</span>
-                </div>
-                <button onclick="toggleChat()" class="text-white hover:text-gray-200">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <!-- Messages Area -->
-            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-4">
-                <!-- Welcome Message -->
-                <div class="chat-bubble-ai">
-                    <p>你好！我是 Aron 的 AI 助手。你可以問我關於 Aron 的技能、專案，或是作品集的任何問題！✨</p>
-                </div>
-            </div>
-
-            <!-- Input Area -->
-            <div class="p-3 bg-white border-t border-gray-100 flex gap-2">
-                <input type="text" id="chat-input" placeholder="問我關於 Aron 的事情..." 
-                       class="flex-1 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-indigo-500 text-sm"
-                       onkeypress="handleKeyPress(event)">
-                <button onclick="sendMessage()" class="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-indigo-700 transition-colors flex-shrink-0">
-                    <i class="fas fa-paper-plane text-sm"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Floating Action Button -->
-        <button onclick="toggleChat()" class="w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center text-2xl z-50 group">
-            <!-- 修改此處：將 fa-sparkles 改為 fa-robot -->
-            <i class="fas fa-robot group-hover:animate-pulse"></i>
-        </button>
-    </div>
-
-    <!-- 回到頂部按鈕 (Adjusted position slightly) -->
-    <a href="#home" class="fixed bottom-8 right-8 w-12 h-12 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 hover:-translate-y-1 transition-all z-30 border border-gray-200">
-        <i class="fas fa-arrow-up"></i>
-    </a>
 
     <script>
-        // ... (保留原有的 script) ...
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. 打字機效果 (真實逐字打字)
-            const words = ["AI新手", "學習程式中🖥️", "遊戲愛好者🎮"];
-            let wordIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
-            const typeSpeed = 100; // 打字速度
-            const deleteSpeed = 50; // 刪除速度
-            const pauseTime = 2000; // 停頓時間
+        // Dark Mode Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            const checkbox = document.getElementById('checkbox');
+            if (checkbox.checked) { html.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
+            else { html.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const checkbox = document.getElementById('checkbox');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (checkbox) checkbox.checked = true;
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (checkbox) checkbox.checked = false;
+            }
+        })();
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkbox = document.getElementById('checkbox');
+            if (checkbox) {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) checkbox.checked = true;
+                else checkbox.checked = false;
+            }
+
+            // ... Existing logic ...
+            const words = ["AI新手", "學習程式中🖥️", "遊戲愛好者🎮"];
+            let wordIndex = 0; let charIndex = 0; let isDeleting = false;
             function typeEffect() {
                 const element = document.getElementById('typewriter');
-                if (!element) return; // 安全檢查
-
+                if (!element) return;
                 const currentWord = words[wordIndex];
-                
-                // 使用 [...currentWord] 將字串轉為陣列以支援 Emoji
                 const currentChars = [...currentWord];
-
-                if (isDeleting) {
-                    charIndex--;
-                } else {
-                    charIndex++;
-                }
-
+                if (isDeleting) charIndex--; else charIndex++;
                 element.innerText = currentChars.slice(0, charIndex).join('');
-
-                let typeSpeedCurrent = isDeleting ? deleteSpeed : typeSpeed;
-
-                if (!isDeleting && charIndex === currentChars.length) {
-                    isDeleting = true;
-                    typeSpeedCurrent = pauseTime;
-                } else if (isDeleting && charIndex === 0) {
-                    isDeleting = false;
-                    wordIndex = (wordIndex + 1) % words.length;
-                    typeSpeedCurrent = 500;
-                }
-
+                let typeSpeedCurrent = isDeleting ? 50 : 100;
+                if (!isDeleting && charIndex === currentChars.length) { isDeleting = true; typeSpeedCurrent = 2000; }
+                else if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % words.length; typeSpeedCurrent = 500; }
                 setTimeout(typeEffect, typeSpeedCurrent);
             }
             typeEffect();
 
-            // 2. 導航列滾動偵測
-            const sections = document.querySelectorAll('section');
-            const navItems = document.querySelectorAll('.nav-item');
+            // Level System
+            let currentLevel = 1; let maxReachedLevel = 1; let konamiActivated = false;
+            let quizWins = 0; let maxPctScrolled = 0;
+            const startTime = Date.now();
+            const scrollMilestones = [15, 35, 55, 75, 95];
+            const timeMilestones = [30, 60, 180, 300, 600];
 
-            window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    // 調整偵測偏移量
-                    if (window.scrollY >= (sectionTop - 300)) {
-                        current = section.getAttribute('id');
-                    }
-                });
-                navItems.forEach(item => {
-                    item.classList.remove('active');
-                    if(item.getAttribute('href').includes(current)) {
-                        item.classList.add('active');
-                    }
-                });
-            });
+            function getTitleForLevel(level) {
+                if (level >= 999) return "隱藏代碼大神";
+                if (level >= 15) return "AI 知識領主";
+                if (level >= 10) return "Aron 的頭號粉絲";
+                if (level >= 8) return "沉浸其中";
+                if (level >= 6) return "認真的閱讀者";
+                if (level >= 4) return "好奇的探索者";
+                if (level >= 2) return "初入佳境";
+                return "路過的路人";
+            }
 
-            // 3. 聯絡表單 (修改為真正透過 EmailJS 寄信)
+            window.incrementQuizWins = function() { quizWins++; checkAndProcessLevelUp(); };
+
+            function calculateCurrentLevel() {
+                if (konamiActivated) return 999;
+                let level = 1;
+                const elapsedSeconds = (Date.now() - startTime) / 1000;
+                timeMilestones.forEach(threshold => { if (elapsedSeconds >= threshold) level++; });
+                const winHeight = window.innerHeight;
+                const docHeight = document.documentElement.scrollHeight;
+                const scrollTop = window.scrollY;
+                const pctScrolled = Math.floor(scrollTop / (docHeight - winHeight) * 100);
+                if (pctScrolled > maxPctScrolled) maxPctScrolled = pctScrolled;
+                scrollMilestones.forEach(threshold => { if (maxPctScrolled >= threshold) level++; });
+                level += quizWins;
+                return { level, title: getTitleForLevel(level) };
+            }
+
+            function checkAndProcessLevelUp() {
+                const status = calculateCurrentLevel();
+                const badgeTitle = document.getElementById('current-title');
+                if (badgeTitle) badgeTitle.innerText = `LV.${status.level} ${status.title}`;
+                if (status.level > maxReachedLevel) {
+                    maxReachedLevel = status.level;
+                    showLevelUpOverlay(status);
+                }
+            }
+
+            function showLevelUpOverlay(status) {
+                const overlay = document.getElementById('levelup-overlay');
+                const overlayTitle = document.getElementById('new-level-title');
+                if(overlay && overlayTitle) {
+                    overlayTitle.innerText = `LV.${status.level} ${status.title}`;
+                    overlay.classList.add('active');
+                    setTimeout(() => { if(overlay.classList.contains('active')) closeLevelUp(); }, 3000);
+                }
+            }
+
+            window.addEventListener('scroll', checkAndProcessLevelUp);
+            setInterval(checkAndProcessLevelUp, 1000);
+
+            // Contact Form
             const form = document.getElementById('contact-form');
-            const successMessage = document.getElementById('success-message');
-            const submitBtn = document.getElementById('submit-btn');
-
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    
+                    const submitBtn = document.getElementById('submit-btn');
                     const originalBtnContent = submitBtn.innerHTML;
-                    
-                    // 顯示 loading 狀態
                     submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 傳送中...';
-                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-                    submitBtn.disabled = true;
-
-                    // 使用 EmailJS 發送表單
                     emailjs.sendForm('service_aron1119', 'template_nj9lowz', this)
-                        .then(function() {
-                            console.log('SUCCESS!');
-                            // 隱藏表單，顯示成功訊息
+                        .then(() => {
+                            document.getElementById('success-message').classList.remove('hidden');
                             form.classList.add('hidden');
-                            successMessage.classList.remove('hidden');
-                            
-                            // 恢復按鈕
                             submitBtn.innerHTML = originalBtnContent;
-                            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                            submitBtn.disabled = false;
-                        }, function(error) {
-                            console.log('FAILED...', error);
-                            alert('發送失敗，請稍後再試：' + JSON.stringify(error));
-                            
-                            // 恢復按鈕
+                        })
+                        .catch(() => {
+                            document.getElementById('form-error-msg').textContent = '發送失敗，請稍後再試。';
+                            document.getElementById('form-error-msg').classList.remove('hidden');
                             submitBtn.innerHTML = originalBtnContent;
-                            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                            submitBtn.disabled = false;
                         });
                 });
             }
+
+            // Magnetic
+            document.querySelectorAll('.magnetic-btn').forEach((magnet) => {
+                magnet.addEventListener('mousemove', function(e) {
+                    const rect = magnet.getBoundingClientRect();
+                    magnet.style.transform = `translate(${(e.clientX - rect.left - rect.width/2)*0.3}px, ${(e.clientY - rect.top - rect.height/2)*0.5}px)`;
+                });
+                magnet.addEventListener('mouseleave', function() { magnet.style.transform = 'translate(0, 0)'; });
+            });
+
+            // 4. Custom Easter Egg Implementation (Modified)
+            // Sequence: Down, Down, Down, Down, Down, Right, Right
+            const konamiCode = ['ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowRight', 'ArrowRight'];
+            let konamiIndex = 0;
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === konamiCode[konamiIndex]) {
+                    konamiIndex++;
+                    if (konamiIndex === konamiCode.length) {
+                        triggerKonamiCelebration();
+                        konamiIndex = 0;
+                    }
+                } else {
+                    konamiIndex = 0;
+                }
+            });
+
+            // Helper Functions for Easter Egg
+            function triggerKonamiCelebration() {
+                // Set flag to force max level
+                konamiActivated = true;
+                checkAndProcessLevelUp(); // Trigger update immediately
+
+                // Confetti effect
+                if (typeof confetti !== 'undefined') {
+                    var duration = 5 * 1000;
+                    var animationEnd = Date.now() + duration;
+                    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+                    function randomInRange(min, max) {
+                        return Math.random() * (max - min) + min;
+                    }
+
+                    var interval = setInterval(function() {
+                        var timeLeft = animationEnd - Date.now();
+
+                        if (timeLeft <= 0) {
+                            return clearInterval(interval);
+                        }
+
+                        var particleCount = 50 * (timeLeft / duration);
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                    }, 250);
+                }
+            }
         });
 
-        // 這些函式需要在全域範圍，因為 HTML onclick 會呼叫它們
-        function resetForm() {
-            const form = document.getElementById('contact-form');
-            const successMessage = document.getElementById('success-message');
-            if (form && successMessage) {
-                form.reset();
-                successMessage.classList.add('hidden');
-                form.classList.remove('hidden');
-            }
-        }
+        // Global functions
+        function closeLevelUp() { document.getElementById('levelup-overlay').classList.remove('active'); }
+        function spinAvatar() { const a = document.getElementById('avatar-container'); if(a){ a.classList.remove('spin-click'); void a.offsetWidth; a.classList.add('spin-click'); } }
+        function resetForm() { document.getElementById('contact-form').reset(); document.getElementById('success-message').classList.add('hidden'); document.getElementById('contact-form').classList.remove('hidden'); }
+        function copyEmail() { navigator.clipboard.writeText("aronforcode@gmail.com").then(() => { const t = document.getElementById('copy-text'); const old = t.innerText; t.innerText = "已複製！"; setTimeout(()=>t.innerText=old, 2000); }); }
+        function openModal(id) { const m = document.getElementById(id); if(m) { m.classList.remove('hidden'); m.classList.add('flex'); document.body.style.overflow = 'hidden'; } }
+        function closeModal(id) { const m = document.getElementById(id); if(m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; } }
 
-        const myEmail = "aronforcode@gmail.com"; 
-        function copyEmail() {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(myEmail).then(() => {
-                    showCopySuccess();
-                }).catch(err => {
-                    console.warn('Clipboard API failed', err);
-                    copyEmailFallback();
-                });
-            } else {
-                copyEmailFallback();
-            }
-        }
+        // ================= Gemini AI Logic =================
+        const apiKey = "AIzaSyDXbWMEA88rKVtaHz1qf5KAa3UgbK6weTM"; 
+        const systemContext = `You are an AI assistant for Aron's portfolio. Tone: Friendly, concise.`;
 
-        function copyEmailFallback() {
-            const textArea = document.createElement("textarea");
-            textArea.value = myEmail;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
+        // --- NEW: Project Idea Generator Logic ---
+        async function generateProjectIdea(cardElement) {
+            if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
             
+            const titleEl = cardElement.querySelector('#idea-title');
+            const descEl = cardElement.querySelector('#idea-desc');
+            const loadingEl = cardElement.querySelector('#idea-loading');
+            
+            // UI Loading State
+            titleEl.textContent = "AI 正在構思...";
+            descEl.textContent = "正在分析您的技能堆疊並尋找最佳點子...";
+            loadingEl.classList.remove('hidden');
+            cardElement.style.pointerEvents = 'none'; // Prevent double click
+
             try {
-                document.execCommand('copy');
-                showCopySuccess();
-            } catch (err) {
-                alert('無法複製，請手動複製: ' + myEmail);
-            }
-            document.body.removeChild(textArea);
-        }
-
-        function showCopySuccess() {
-            const textSpan = document.getElementById('copy-text');
-            if (textSpan) {
-                const originalText = textSpan.innerText;
-                textSpan.innerText = "已複製！";
-                setTimeout(() => {
-                    textSpan.innerText = originalText;
-                }, 2000);
-            }
-        }
-
-        // ================= New Modal Logic =================
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.body.style.overflow = 'hidden'; // 防止背景滾動
-            }
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = ''; // 恢復背景滾動
-            }
-        }
-
-        // ================= Gemini AI Chat Logic =================
-        // TODO: 請在下方引號中填入您的 Gemini API Key 才能在本地端使用
-        const apiKey = "AIzaSyDKDIrmyCJbF04iIptvydL3NIb8TMb81AY"; 
-        
-        // System prompt context
-        const systemContext = `
-            You are an AI assistant for Aron's portfolio website. 
-            Your name is "Aron's AI Assistant".
-            
-            Here is the information about Aron you should know:
-            - **Identity:** High school student, full-stack developer, AI enthusiast.
-            - **Tagline:** "Turning ideas into reality with AI."
-            - **Skills:** HTML, CSS, JavaScript, Python, C++, React, Vue.js, Three.js, Gemini API.
-            - **Tools:** VS Code, GitHub, Gemini.
-            - **Contact:** aronforcode@gmail.com.
-            
-            **Featured AI Projects:**
-            1. **Standard Deviation Calculator:** React app for stats & graphs. (Live)
-            2. **3D Shooter:** WebGL/Three.js FPS game. (Live)
-            3. **Chinese Chess:** Classic strategy game. (Live)
-            4. **Todo List:** Vue.js + LocalStorage. (In development)
-            5. **Weather App:** OpenWeather API. (In development)
-            6. **E-commerce:** React + Redux. (In development)
-            7. **Expense Tracker:** Vue + Chart.js. (In development)
-            8. **Movie Search:** TMDB API + React. (In development)
-            9. **Snake Game:** HTML5 Canvas. (In development)
-            
-            **FreeCodeCamp Certifications:**
-            - **Responsive Web Design:** 11 completed projects (Cat Photo, Cafe Menu, Markers, Form, Survey, Painting, Photo Gallery, Nutrition Label, Quiz, Tribute, Doc).
-            - **JS Algorithms & Front End Libraries:** Not started yet.
-
-            **Tone:** Friendly, enthusiastic, encouraging, and helpful. Use emojis occasionally (✨, 🚀).
-            **Language:** Reply in Traditional Chinese (繁體中文) unless the user speaks English.
-            **Constraint:** Keep answers concise (under 3 sentences if possible).
-        `;
-
-        function toggleChat() {
-            const chatWindow = document.getElementById('ai-chat-window');
-            chatWindow.classList.toggle('hidden');
-            if (!chatWindow.classList.contains('hidden')) {
-                document.getElementById('chat-input').focus();
-            }
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        // 封裝 API 請求功能
-        async function callGeminiAPI(modelName, userText) {
-            console.log(`Trying model: ${modelName}...`); // Debug log
-            // 大部分模型使用 v1beta，但為了相容性，我們統一使用 v1beta
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: userText }]
-                    }],
-                    systemInstruction: {
-                        parts: [{ text: systemContext }]
+                const prompt = "Generate 1 creative, unique web development project idea suitable for a portfolio. Tech stack: React, Tailwind CSS, JavaScript. Format: Title: [Title] | Description: [One catchy sentence description]. Keep it brief.";
+                const responseText = await runGeminiWithRetry(prompt, "You are a creative mentor.");
+                
+                // Parse result (Simple split)
+                let title = "AI 專案點子";
+                let desc = responseText;
+                
+                if (responseText.includes("Title:") && responseText.includes("Description:")) {
+                    // Try to parse structured response
+                    const parts = responseText.split("|");
+                    if (parts.length >= 2) {
+                        title = parts[0].replace("Title:", "").trim();
+                        desc = parts[1].replace("Description:", "").trim();
+                    } else {
+                        // Fallback parsing
+                        const lines = responseText.split("\n");
+                        title = lines[0].replace("Title:", "").trim();
+                        desc = lines.slice(1).join(" ").replace("Description:", "").trim();
                     }
-                })
-            });
-            
-            if (!response.ok) {
-                // 如果是 404 或 400，拋出特定錯誤以便切換模型
-                if (response.status === 404 || response.status === 400 || response.status === 503) {
-                    throw new Error("ModelError");
-                }
-                const errorData = await response.json().catch(() => ({}));
-                
-                // 處理 429 請求過多
-                if (response.status === 429) {
-                    throw new Error("TooManyRequests");
-                }
-                
-                // 處理其他權限問題
-                if (response.status === 403) {
-                    throw new Error("PermissionDenied");
                 }
 
-                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || response.statusText}`);
+                // Update UI
+                titleEl.textContent = title;
+                descEl.textContent = desc;
+                
+            } catch (e) {
+                console.error(e);
+                titleEl.textContent = "生成失敗";
+                descEl.textContent = "AI 暫時無法連接，請稍後再試。";
+            } finally {
+                loadingEl.classList.add('hidden');
+                cardElement.style.pointerEvents = 'auto';
             }
+        }
+
+        // --- Quiz Logic ---
+        let currentQuizAnswer = -1;
+        async function startQuiz() {
+            if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
+            
+            const modal = document.getElementById('quiz-modal');
+            const loading = document.getElementById('quiz-loading');
+            const content = document.getElementById('quiz-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            const skills = ["HTML", "CSS", "JavaScript", "Python", "React", "Web Design"];
+            const skill = skills[Math.floor(Math.random() * skills.length)];
+
+            try {
+                const prompt = `Generate 1 multiple choice question about ${skill} for a beginner developer in Traditional Chinese. 
+                Return strictly valid JSON with no markdown formatting. Format:
+                { "q": "Question text", "o": ["Option A", "Option B", "Option C", "Option D"], "a": 0, "e": "Short explanation" }
+                (where 'a' is the index of the correct answer 0-3)`;
+
+                const responseText = await runGeminiWithRetry(prompt, "You are a quiz generator that outputs strictly valid JSON.");
+                const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                const data = JSON.parse(cleanJson);
+
+                document.getElementById('quiz-question').textContent = `[${skill}] ${data.q}`;
+                const optionsContainer = document.getElementById('quiz-options');
+                optionsContainer.innerHTML = '';
+                currentQuizAnswer = data.a;
+
+                data.o.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.textContent = opt;
+                    btn.onclick = () => checkQuizAnswer(btn, idx, data.a, data.e);
+                    optionsContainer.appendChild(btn);
+                });
+
+                document.getElementById('quiz-result').className = 'mt-4 hidden p-4 rounded-xl text-sm'; 
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+
+            } catch (e) {
+                console.error(e);
+                alert("出題失敗，AI 可能累了，請稍後再試！");
+                closeQuiz();
+            }
+        }
+
+        function checkQuizAnswer(btn, selectedIdx, correctIdx, explanation) {
+            const options = document.querySelectorAll('.quiz-option');
+            const resultBox = document.getElementById('quiz-result');
+            options.forEach(opt => opt.disabled = true);
+
+            if (selectedIdx === correctIdx) {
+                btn.classList.add('correct');
+                resultBox.className = 'mt-4 block p-4 rounded-xl text-sm bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200';
+                resultBox.innerHTML = `<strong>🎉 答對了！</strong> <br> ${explanation} <br><span class="text-xs mt-1 block">經驗值 +1 (等級提升)</span>`;
+                if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                if(window.incrementQuizWins) window.incrementQuizWins();
+            } else {
+                btn.classList.add('wrong');
+                options[correctIdx].classList.add('correct');
+                resultBox.className = 'mt-4 block p-4 rounded-xl text-sm bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
+                resultBox.innerHTML = `<strong>😅 答錯了...</strong> <br> ${explanation}`;
+            }
+        }
+        function closeQuiz() { closeModal('quiz-modal'); }
+
+        // --- Core Gemini Function ---
+        async function runGeminiWithRetry(text, customContext = null) {
+            const candidateModels = ["gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+            for (const model of candidateModels) {
+                try {
+                    return (await callGeminiAPI(model, text, customContext)).candidates[0].content.parts[0].text;
+                } catch (e) { if(model === candidateModels[3]) throw e; }
+            }
+        }
+
+        async function callGeminiAPI(modelName, userText, customContext) {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }], systemInstruction: { parts: [{ text: customContext || systemContext }] } })
+            });
+            if (!response.ok) throw new Error("API Error");
             return response.json();
         }
 
+        function toggleChat() { document.getElementById('ai-chat-window').classList.toggle('hidden'); }
         async function sendMessage() {
-            const inputField = document.getElementById('chat-input');
-            const messageContainer = document.getElementById('chat-messages');
-            const userText = inputField.value.trim();
-            
-            if (!userText) return;
-
-            // 1. Add User Message
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-bubble-user';
-            userBubble.textContent = userText;
-            messageContainer.appendChild(userBubble);
-            
-            inputField.value = '';
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-
-            // 2. Add Loading Indicator
-            const loadingBubble = document.createElement('div');
-            loadingBubble.className = 'chat-bubble-ai';
-            loadingBubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-            loadingBubble.id = 'loading-bubble';
-            messageContainer.appendChild(loadingBubble);
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-
-            // Check API Key
-            if (!apiKey) {
-                 messageContainer.removeChild(loadingBubble);
-                 const errorBubble = document.createElement('div');
-                 errorBubble.className = 'chat-bubble-ai text-red-500';
-                 errorBubble.textContent = "請設定 API Key 才能使用 AI 功能。";
-                 messageContainer.appendChild(errorBubble);
-                 return;
-            }
-
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+            const container = document.getElementById('chat-messages');
+            container.innerHTML += `<div class="chat-bubble-user">${text}</div>`;
+            input.value = '';
+            container.innerHTML += `<div id="loading" class="chat-bubble-ai"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+            container.scrollTop = container.scrollHeight;
+            if(!apiKey) { document.getElementById('loading').innerHTML = "請設定 API Key"; return; }
             try {
-                // 3. Call Gemini API with Smart Retry Logic (Targeted)
-                // 根據日誌：3-flash-preview 和 2.0-flash-exp 會回傳 429 (代表存在但忙碌)
-                // 其他模型回傳 404 (代表不存在)。
-                // 策略：優先死守那些回傳 429 的模型，不要輕易切換到 404 的模型。
-                const candidateModels = [
-                    "gemini-2.0-flash-exp",   // 通常這個最穩 (雖然容易 429)
-                    "gemini-3-flash-preview", // 您指定的模型
-                    "gemini-1.5-flash",       // 備用
-                    "gemini-1.5-flash-8b"     // 備用
-                ];
-                
-                let data = null;
-                let lastError = null;
-
-                // 迴圈嘗試每個模型
-                for (const model of candidateModels) {
-                    // 針對同一個模型，最多重試 3 次
-                    for (let attempt = 0; attempt < 3; attempt++) {
-                        try {
-                            data = await callGeminiAPI(model, userText);
-                            break; // 成功取得資料，跳出重試迴圈
-                        } catch (err) {
-                            console.warn(`Model ${model} attempt ${attempt + 1} failed:`, err.message);
-                            lastError = err;
-                            
-                            if (err.message === "TooManyRequests") {
-                                // 關鍵修改：如果是 429 (Rate Limit)，這代表模型是存在的！
-                                // 我們應該死守這個模型，而不是換到下一個可能會報 404 的模型。
-                                const waitTime = 3000 * (attempt + 1); // 3s, 6s, 9s
-                                console.log(`Rate limit hit on ${model}. Waiting ${waitTime/1000}s to retry...`);
-                                
-                                // 更新 UI 告訴使用者正在等待
-                                const loadingDots = loadingBubble.querySelectorAll('.typing-dot');
-                                loadingDots.forEach(d => d.style.backgroundColor = '#fbbf24'); // 變黃色表示等待中
-                                
-                                await new Promise(r => setTimeout(r, waitTime)); 
-                                // 繼續下一次迴圈 (Retry same model)
-                            } else if (err.message === "ModelError") {
-                                // 如果是 404/400 (模型不存在)，直接放棄這個模型，換下一個
-                                // 因為重試也沒用
-                                break; 
-                            } else {
-                                // 其他未知錯誤，也嘗試下一個
-                                break;
-                            }
-                        }
-                    }
-                    if (data) {
-                        console.log(`Successfully connected to ${model}`);
-                        break; // 如果拿到資料，跳出模型迴圈
-                    }
-                }
-
-                if (!data) {
-                    throw lastError || new Error("All models failed");
-                }
-
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，我現在有點累，請稍後再試。😅";
-
-                // 4. Replace Loading with AI Response
-                messageContainer.removeChild(loadingBubble);
-                
-                const aiBubble = document.createElement('div');
-                aiBubble.className = 'chat-bubble-ai';
-                // Parse simple markdown if needed
-                if (typeof marked !== 'undefined') {
-                    aiBubble.innerHTML = marked.parse(aiText);
-                } else {
-                    aiBubble.textContent = aiText;
-                }
-                messageContainer.appendChild(aiBubble);
-
-            } catch (error) {
-                console.error("Gemini API Final Error:", error);
-                const loading = document.getElementById('loading-bubble');
-                if(loading) messageContainer.removeChild(loading);
-                
-                const errorBubble = document.createElement('div');
-                errorBubble.className = 'chat-bubble-ai text-red-500';
-                
-                if (error.message === "TooManyRequests") {
-                     errorBubble.textContent = "🔥 伺服器現在非常忙碌，重試多次仍失敗。請喝口水休息 1 分鐘後再試。";
-                } else {
-                     errorBubble.textContent = "連線發生錯誤。看來目前的 API Key 無法存取可用的模型 (404)，請稍後再試。";
-                }
-                
-                messageContainer.appendChild(errorBubble);
-            }
-
-            messageContainer.scrollTop = messageContainer.scrollHeight;
+                const reply = await runGeminiWithRetry(text);
+                document.getElementById('loading').remove();
+                const bubble = document.createElement('div'); bubble.className = 'chat-bubble-ai';
+                bubble.innerHTML = marked.parse(reply);
+                container.appendChild(bubble);
+            } catch(e) { document.getElementById('loading').textContent = "Error"; }
+            container.scrollTop = container.scrollHeight;
+        }
+        function handleKeyPress(e) { if(e.key === 'Enter') sendMessage(); }
+        async function generateEmailDraft() {
+            if(!apiKey) return alert("No Key");
+            const intent = prompt("請告訴我你想傳達的重點"); if(!intent) return;
+            const ta = document.getElementById('form-message'); ta.value="AI Thinking..."; ta.disabled=true;
+            try { ta.value = await runGeminiWithRetry(intent, "Write a polite email body in Traditional Chinese based on intent."); } 
+            catch(e){ ta.value="Error"; } finally { ta.disabled=false; }
+        }
+        async function explainSkill(s) {
+            if(!apiKey) return alert("No Key");
+            const t = document.getElementById('skill-toast'); document.getElementById('skill-toast-content').textContent=`Thinking about ${s}...`; t.classList.add('show');
+            try { const r = await runGeminiWithRetry(`Explain ${s}`, "Explain briefly in Traditional Chinese."); document.getElementById('skill-toast-content').textContent=`💡 ${s}: ${r}`; }
+            catch(e) { document.getElementById('skill-toast-content').textContent="Error"; }
+            setTimeout(()=>t.classList.remove('show'), 5000);
         }
     </script>
 </body>
