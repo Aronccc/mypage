@@ -57,6 +57,7 @@
                         'bounce-slight': 'bounce-slight 2s infinite',
                         'spin-fast': 'spin 0.5s ease-in-out',
                         'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         'bounce-slight': {
@@ -730,7 +731,6 @@
             gap: 0.5rem;
             text-decoration: none !important;
         }
-
         .btn-chipmunk::before {
             content: '';
             width: 0;
@@ -744,17 +744,18 @@
             display: block;
             z-index: -1;
         }
-
         .btn-chipmunk:hover::before {
             width: 600%; /* 增加寬度以確保覆蓋 */
         }
-
         .btn-chipmunk:hover {
             color: #ffffff; 
             box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
         }
-
-        /* Dark Mode Adjustments for Chipmunk Button */
+        html.dark .btn-chipmunk {
+            border-color: #60a5fa; 
+            color: #60a5fa;
+        }
+        html.dark .btn-chipmunk::before {
             background: #60a5fa;
         }
         html.dark .btn-chipmunk:hover {
@@ -825,9 +826,7 @@
                     <a href="https://github.com/aronccc" target="_blank" class="hover:text-black dark:hover:text-white transition-colors text-2xl" title="GitHub"><i class="fab fa-github"></i></a>
                 </div>
                 
-                <div class="text-xs text-gray-400 dark:text-gray-500 mt-4">
-                    💡 提示：試著在鍵盤輸入 ↓ ↓ ↓ ↓ ↓ → → 會有驚喜喔！
-                </div>
+                <!-- Konami Code 提示已移除 -->
             </div>
 
             <!-- 右側圖片 -->
@@ -837,7 +836,8 @@
                      id="avatar-container"
                      onclick="spinAvatar()"
                      title="點我轉圈圈！">
-                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Aron&backgroundColor=b6e3f4" alt="Aron Avatar" class="w-full h-full object-cover">
+                    <!-- 圖片已更換 -->
+                    <img src="IMG_20251203_235357_165.jpg" alt="Aron Avatar" class="w-full h-full object-cover">
                 </div>
             </div>
         </section>
@@ -1405,7 +1405,6 @@
             });
 
             // 4. Custom Easter Egg Implementation (Modified)
-            // Sequence: Down, Down, Down, Down, Down, Right, Right
             const konamiCode = ['ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowDown', 'ArrowRight', 'ArrowRight'];
             let konamiIndex = 0;
 
@@ -1461,64 +1460,71 @@
         function closeModal(id) { const m = document.getElementById(id); if(m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; } }
 
         // ================= Gemini AI Logic =================
-        const apiKey = "AIzaSyDXbWMEA88rKVtaHz1qf5KAa3UgbK6weTM"; 
+        const apiKey = ""; 
         const systemContext = `You are an AI assistant for Aron's portfolio. Tone: Friendly, concise.`;
+        
+        let isGenerating = false; // Lock to prevent double submit
 
         // --- NEW: Project Idea Generator Logic ---
         async function generateProjectIdea(cardElement) {
+            if (isGenerating) return; // Prevent multiple clicks
             if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
             
+            isGenerating = true;
             const titleEl = cardElement.querySelector('#idea-title');
             const descEl = cardElement.querySelector('#idea-desc');
             const loadingEl = cardElement.querySelector('#idea-loading');
             
             // UI Loading State
+            const originalTitle = titleEl.textContent;
+            const originalDesc = descEl.textContent;
+            
             titleEl.textContent = "AI 正在構思...";
             descEl.textContent = "正在分析您的技能堆疊並尋找最佳點子...";
             loadingEl.classList.remove('hidden');
-            cardElement.style.pointerEvents = 'none'; // Prevent double click
+            cardElement.style.pointerEvents = 'none';
 
             try {
                 const prompt = "Generate 1 creative, unique web development project idea suitable for a portfolio. Tech stack: React, Tailwind CSS, JavaScript. Format: Title: [Title] | Description: [One catchy sentence description]. Keep it brief.";
                 const responseText = await runGeminiWithRetry(prompt, "You are a creative mentor.");
                 
-                // Parse result (Simple split)
+                // Parse result
                 let title = "AI 專案點子";
                 let desc = responseText;
                 
                 if (responseText.includes("Title:") && responseText.includes("Description:")) {
-                    // Try to parse structured response
                     const parts = responseText.split("|");
                     if (parts.length >= 2) {
                         title = parts[0].replace("Title:", "").trim();
                         desc = parts[1].replace("Description:", "").trim();
                     } else {
-                        // Fallback parsing
                         const lines = responseText.split("\n");
                         title = lines[0].replace("Title:", "").trim();
                         desc = lines.slice(1).join(" ").replace("Description:", "").trim();
                     }
                 }
 
-                // Update UI
                 titleEl.textContent = title;
                 descEl.textContent = desc;
                 
             } catch (e) {
                 console.error(e);
                 titleEl.textContent = "生成失敗";
-                descEl.textContent = "AI 暫時無法連接，請稍後再試。";
+                descEl.textContent = "AI 暫時忙碌，請稍後再試。";
             } finally {
                 loadingEl.classList.add('hidden');
                 cardElement.style.pointerEvents = 'auto';
+                isGenerating = false;
             }
         }
 
         // --- Quiz Logic ---
         let currentQuizAnswer = -1;
         async function startQuiz() {
+            if (isGenerating) return;
             if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
             
+            isGenerating = true;
             const modal = document.getElementById('quiz-modal');
             const loading = document.getElementById('quiz-loading');
             const content = document.getElementById('quiz-content');
@@ -1560,8 +1566,10 @@
 
             } catch (e) {
                 console.error(e);
-                alert("出題失敗，AI 可能累了，請稍後再試！");
+                alert("AI 正在休息，請稍後再試！");
                 closeQuiz();
+            } finally {
+                isGenerating = false;
             }
         }
 
@@ -1585,59 +1593,134 @@
         }
         function closeQuiz() { closeModal('quiz-modal'); }
 
-        // --- Core Gemini Function ---
+        // --- Core Gemini Function with Robust Retry ---
         async function runGeminiWithRetry(text, customContext = null) {
-            const candidateModels = ["gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+            // Updated model list to prioritize stability
+            const candidateModels = ["gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"];
+            let lastError = null;
+
+            // Loop through each model
             for (const model of candidateModels) {
-                try {
-                    return (await callGeminiAPI(model, text, customContext)).candidates[0].content.parts[0].text;
-                } catch (e) { if(model === candidateModels[3]) throw e; }
+                // Try each model up to 2 times
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        const data = await callGeminiAPI(model, text, customContext);
+                        return data.candidates[0].content.parts[0].text;
+                    } catch (err) {
+                        console.warn(`Model ${model} attempt ${attempt + 1} failed: ${err.message}`);
+                        lastError = err;
+                        
+                        if (err.message === "TooManyRequests") {
+                            // Rate limit hit (429) - wait with exponential backoff and retry same model
+                            const waitTime = (attempt + 1) * 2000;
+                            await new Promise(r => setTimeout(r, waitTime));
+                        } else if (err.message === "ModelError") {
+                            // 404/400 - Model not found/invalid, stop retrying this model, try next one
+                            break; 
+                        } else {
+                            // Other errors (network etc) - maybe retry or try next
+                            break;
+                        }
+                    }
+                }
             }
+            throw lastError || new Error("All models failed");
         }
 
         async function callGeminiAPI(modelName, userText, customContext) {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }], systemInstruction: { parts: [{ text: customContext || systemContext }] } })
             });
-            if (!response.ok) throw new Error("API Error");
+            
+            if (!response.ok) {
+                // Determine error type based on status code
+                if (response.status === 404 || response.status === 400) throw new Error("ModelError");
+                if (response.status === 429) throw new Error("TooManyRequests");
+                if (response.status === 503) throw new Error("ServiceUnavailable");
+                throw new Error(`API Error: ${response.status}`);
+            }
             return response.json();
         }
 
         function toggleChat() { document.getElementById('ai-chat-window').classList.toggle('hidden'); }
         async function sendMessage() {
+            if (isGenerating) return;
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if(!text) return;
+            
+            isGenerating = true;
             const container = document.getElementById('chat-messages');
             container.innerHTML += `<div class="chat-bubble-user">${text}</div>`;
             input.value = '';
             container.innerHTML += `<div id="loading" class="chat-bubble-ai"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
             container.scrollTop = container.scrollHeight;
-            if(!apiKey) { document.getElementById('loading').innerHTML = "請設定 API Key"; return; }
+            
+            if(!apiKey) { 
+                document.getElementById('loading').innerHTML = "請設定 API Key"; 
+                isGenerating = false;
+                return; 
+            }
+            
             try {
                 const reply = await runGeminiWithRetry(text);
-                document.getElementById('loading').remove();
-                const bubble = document.createElement('div'); bubble.className = 'chat-bubble-ai';
+                const loadingBubble = document.getElementById('loading');
+                if(loadingBubble) loadingBubble.remove();
+                
+                const bubble = document.createElement('div'); 
+                bubble.className = 'chat-bubble-ai';
                 bubble.innerHTML = marked.parse(reply);
                 container.appendChild(bubble);
-            } catch(e) { document.getElementById('loading').textContent = "Error"; }
+            } catch(e) { 
+                const loading = document.getElementById('loading');
+                if(loading) loading.textContent = "AI 暫時無法回應 (Busy)，請稍後再試。"; 
+            } finally {
+                isGenerating = false;
+            }
             container.scrollTop = container.scrollHeight;
         }
         function handleKeyPress(e) { if(e.key === 'Enter') sendMessage(); }
+        
         async function generateEmailDraft() {
+            if (isGenerating) return;
             if(!apiKey) return alert("No Key");
             const intent = prompt("請告訴我你想傳達的重點"); if(!intent) return;
-            const ta = document.getElementById('form-message'); ta.value="AI Thinking..."; ta.disabled=true;
-            try { ta.value = await runGeminiWithRetry(intent, "Write a polite email body in Traditional Chinese based on intent."); } 
-            catch(e){ ta.value="Error"; } finally { ta.disabled=false; }
+            
+            isGenerating = true;
+            const ta = document.getElementById('form-message'); 
+            ta.value="AI Thinking..."; 
+            ta.disabled=true;
+            
+            try { 
+                ta.value = await runGeminiWithRetry(intent, "Write a polite email body in Traditional Chinese based on intent."); 
+            } catch(e) { 
+                ta.value="Error generating email."; 
+            } finally { 
+                ta.disabled=false; 
+                isGenerating = false;
+            }
         }
+        
         async function explainSkill(s) {
+            if (isGenerating) return;
             if(!apiKey) return alert("No Key");
-            const t = document.getElementById('skill-toast'); document.getElementById('skill-toast-content').textContent=`Thinking about ${s}...`; t.classList.add('show');
-            try { const r = await runGeminiWithRetry(`Explain ${s}`, "Explain briefly in Traditional Chinese."); document.getElementById('skill-toast-content').textContent=`💡 ${s}: ${r}`; }
-            catch(e) { document.getElementById('skill-toast-content').textContent="Error"; }
+            
+            isGenerating = true;
+            const t = document.getElementById('skill-toast'); 
+            document.getElementById('skill-toast-content').textContent=`Thinking about ${s}...`; 
+            t.classList.add('show');
+            
+            try { 
+                const r = await runGeminiWithRetry(`Explain ${s}`, "Explain briefly in Traditional Chinese."); 
+                document.getElementById('skill-toast-content').textContent=`💡 ${s}: ${r}`; 
+            } catch(e) { 
+                document.getElementById('skill-toast-content').textContent="AI Busy..."; 
+            } finally {
+                isGenerating = false;
+            }
             setTimeout(()=>t.classList.remove('show'), 5000);
         }
     </script>
