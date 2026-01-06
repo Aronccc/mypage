@@ -6,22 +6,19 @@
     <title>Aron 的作品集</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Poppins (常見於此類設計) & Noto Sans TC -->
+    <!-- Google Fonts: Poppins & Noto Sans TC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Markdown Parser for AI responses -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Canvas Confetti (For Easter Egg) -->
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // 初始化 EmailJS
             try {
                 emailjs.init("mBmfYaTbIckxfBWiE"); 
             } catch (e) {
@@ -32,22 +29,22 @@
     
     <script>
         tailwind.config = {
-            darkMode: 'class', // 啟用 class 模式的 Dark Mode
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['"Poppins"', '"Noto Sans TC"', 'sans-serif'],
                     },
                     colors: {
-                        bg: '#f3f4f6',         // 淺灰背景
-                        surface: '#ffffff',    // 純白表面
-                        primary: '#111827',    // 近乎黑色的主色
-                        secondary: '#4b5563',  // 次要文字
-                        accent: '#3b82f6',     // 亮藍色
-                        accentDark: '#1d4ed8', // 深藍色
+                        bg: '#f3f4f6',
+                        surface: '#ffffff',
+                        primary: '#111827',
+                        secondary: '#4b5563',
+                        accent: '#3b82f6',
+                        accentDark: '#1d4ed8',
                     },
                     borderRadius: {
-                        '4xl': '2.5rem',       // 更大的圓角
+                        '4xl': '2.5rem',
                     },
                     boxShadow: {
                         'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
@@ -57,7 +54,6 @@
                         'bounce-slight': 'bounce-slight 2s infinite',
                         'spin-fast': 'spin 0.5s ease-in-out',
                         'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         'bounce-slight': {
@@ -80,9 +76,8 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        /* Dark Mode Body Transition */
         html.dark body {
-            background-color: #111827; /* gray-900 */
+            background-color: #111827;
             color: #f3f4f6;
         }
 
@@ -99,7 +94,7 @@
         }
         
         html.dark .nav-pill {
-            background: rgba(31, 41, 55, 0.9); /* gray-800 */
+            background: rgba(31, 41, 55, 0.9);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
         
@@ -116,7 +111,7 @@
         }
         
         html.dark .nav-item {
-            color: #9ca3af; /* gray-400 */
+            color: #9ca3af;
         }
         
         .nav-item:hover {
@@ -134,7 +129,7 @@
         }
         
         html.dark .nav-item.active {
-            background-color: #3b82f6; /* blue-500 */
+            background-color: #3b82f6;
             color: #ffffff;
         }
 
@@ -173,7 +168,7 @@
             overflow: hidden;
         }
         html.dark .btn-black {
-            background-color: #3b82f6; /* blue-500 in dark mode for contrast */
+            background-color: #3b82f6;
             color: white;
         }
         .btn-black:hover {
@@ -218,40 +213,27 @@
         }
         html.dark .tech-tag {
             background-color: rgba(59, 130, 246, 0.15);
-            color: #60a5fa; /* lighter blue */
+            color: #60a5fa;
         }
         
-        /* 可互動的技能標籤 */
-        .interactive-tag {
+        /* 技能標籤 (Static) */
+        .skill-tag {
             background-color: #f3f4f6;
             color: #4b5563;
             padding: 0.5rem 1rem;
             border-radius: 0.75rem;
             font-size: 0.875rem;
             font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
             border: 1px solid transparent;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
-        html.dark .interactive-tag {
-            background-color: #374151; /* gray-700 */
-            color: #d1d5db; /* gray-300 */
+        html.dark .skill-tag {
+            background-color: #374151;
+            color: #d1d5db;
         }
-        .interactive-tag:hover {
-            background-color: #eff6ff;
-            color: #3b82f6;
-            border-color: #bfdbfe;
-            transform: scale(1.05);
-        }
-        html.dark .interactive-tag:hover {
-            background-color: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            border-color: #1e3a8a;
-        }
-        .interactive-tag i {
+        .skill-tag i {
             font-size: 0.75rem;
             opacity: 0.5;
         }
@@ -267,8 +249,8 @@
             transition: all 0.3s;
         }
         html.dark .form-input {
-            background-color: #374151; /* gray-700 */
-            border-color: #4b5563; /* gray-600 */
+            background-color: #374151;
+            border-color: #4b5563;
             color: #ffffff;
         }
         .form-input:focus {
@@ -277,127 +259,26 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
         html.dark .form-input:focus {
-            background-color: #1f2937; /* gray-800 */
+            background-color: #1f2937;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
         }
 
         /* Modal 動畫 */
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        }
-        .modal-exit {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .modal-exit-active {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.2s ease-in, transform 0.2s ease-in;
-        }
-
-        /* Chat Widget Styles */
-        .chat-bubble-user {
-            background-color: #3b82f6;
-            color: white;
-            border-radius: 1.25rem 1.25rem 0 1.25rem;
-            padding: 0.75rem 1rem;
-            margin-left: auto;
-            max-width: 80%;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .chat-bubble-ai {
-            background-color: #f3f4f6;
-            color: #1f2937;
-            border-radius: 1.25rem 1.25rem 1.25rem 0;
-            padding: 0.75rem 1rem;
-            margin-right: auto;
-            max-width: 80%;
-            font-size: 0.9rem;
-            border: 1px solid #e5e7eb;
-        }
-        html.dark .chat-bubble-ai {
-            background-color: #374151; /* gray-700 */
-            color: #e5e7eb; /* gray-200 */
-            border-color: #4b5563;
-        }
-        .typing-dot {
-            animation: typing 1.4s infinite ease-in-out both;
-            height: 6px;
-            width: 6px;
-            background-color: #6b7280;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 1px;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-in, transform 0.2s ease-in; }
 
         /* Custom Scrollbar for Modal */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-        html.dark .custom-scrollbar::-webkit-scrollbar-track {
-            background: #374151;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-        html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #6b7280;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        html.dark .custom-scrollbar::-webkit-scrollbar-track { background: #374151; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-        /* Toast Notification */
-        #skill-toast {
-            position: fixed;
-            bottom: 6rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background-color: #111827;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            z-index: 60;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            max-width: 90vw;
-            width: max-content;
-            text-align: center;
-        }
-        html.dark #skill-toast {
-            background-color: #ffffff;
-            color: #111827;
-        }
-        #skill-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-        
         /* Spin Animation */
-        .spin-click {
-            animation: spin-anim 0.8s ease-in-out;
-        }
+        .spin-click { animation: spin-anim 0.8s ease-in-out; }
         @keyframes spin-anim {
             0% { transform: rotate(0deg) scale(1); }
             50% { transform: rotate(180deg) scale(1.1); }
@@ -472,20 +353,16 @@
             color: #111827;
             border: 1px solid rgba(0,0,0,0.1);
         }
-        html.dark .levelup-overlay p {
-            color: #4b5563;
-        }
+        html.dark .levelup-overlay p { color: #4b5563; }
         html.dark .levelup-overlay .text-yellow-400 {
-            color: #d97706; /* darker yellow for visibility on white */
+            color: #d97706;
             border-color: rgba(217, 119, 6, 0.3);
         }
         html.dark .levelup-overlay button {
             background-color: #111827;
             color: white;
         }
-        html.dark .levelup-overlay button:hover {
-            background-color: #1f2937;
-        }
+        html.dark .levelup-overlay button:hover { background-color: #1f2937; }
         .levelup-overlay.active {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
@@ -498,7 +375,7 @@
             animation: bounce-slight 1s infinite;
         }
 
-        /* ============= Smart Moth Button (Send Message) ============= */
+        /* Smart Moth Button */
         .btn-uiverse {
             font-family: inherit;
             font-size: 18px;
@@ -533,234 +410,39 @@
             transform: translateY(-3px);
             box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
         }
-        .btn-uiverse:hover .svg-wrapper {
-            animation: fly-1 0.6s ease-in-out infinite alternate;
-        }
-        .btn-uiverse:hover svg {
-            transform: translateX(2.5em) rotate(45deg) scale(1.1);
-        }
-        .btn-uiverse:hover span {
-            transform: translateX(8em); opacity: 0;
-        }
-        .btn-uiverse:active {
-            transform: scale(0.95);
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        @keyframes fly-1 {
-            from { transform: translateY(0.1em); }
-            to { transform: translateY(-0.1em); }
-        }
+        .btn-uiverse:hover .svg-wrapper { animation: fly-1 0.6s ease-in-out infinite alternate; }
+        .btn-uiverse:hover svg { transform: translateX(2.5em) rotate(45deg) scale(1.1); }
+        .btn-uiverse:hover span { transform: translateX(8em); opacity: 0; }
+        .btn-uiverse:active { transform: scale(0.95); box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); }
+        @keyframes fly-1 { from { transform: translateY(0.1em); } to { transform: translateY(-0.1em); } }
 
-        /* ============= Dark Mode Toggle (Fluffy Robin 48) ============= */
-        .theme-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .theme-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            -webkit-transition: .4s;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-            border-radius: 50%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FDB813'%3E%3Cpath d='M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z' /%3E%3C/svg%3E");
-            background-size: 18px 18px;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        input:checked + .slider {
-            background-color: #111827; /* Dark bg */
-        }
-        input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3;
-        }
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239CA3AF'%3E%3Cpath fill-rule='evenodd' d='M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z' clip-rule='evenodd' /%3E%3C/svg%3E");
-        }
+        /* Dark Mode Toggle */
+        .theme-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; -webkit-transition: .4s; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; -webkit-transition: .4s; transition: .4s; border-radius: 50%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FDB813'%3E%3Cpath d='M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z' /%3E%3C/svg%3E"); background-size: 18px 18px; background-repeat: no-repeat; background-position: center; }
+        input:checked + .slider { background-color: #111827; }
+        input:focus + .slider { box-shadow: 0 0 1px #2196F3; }
+        input:checked + .slider:before { -webkit-transform: translateX(26px); -ms-transform: translateX(26px); transform: translateX(26px); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239CA3AF'%3E%3Cpath fill-rule='evenodd' d='M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z' clip-rule='evenodd' /%3E%3C/svg%3E"); }
 
-        /* ============= New Back To Top Button (Afraid Falcon 17 Style) ============= */
-        .btn-falcon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgb(20, 20, 20);
-            border: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
-            cursor: pointer;
-            transition-duration: 0.3s;
-            overflow: hidden;
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 30;
-            text-decoration: none !important;
-        }
-        html.dark .btn-falcon {
-            background-color: #374151; 
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-        }
-        .svgIcon {
-            width: 12px;
-            transition-duration: 0.3s;
-        }
+        /* Back To Top Button */
+        .btn-falcon { width: 50px; height: 50px; border-radius: 50%; background-color: rgb(20, 20, 20); border: none; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164); cursor: pointer; transition-duration: 0.3s; overflow: hidden; position: fixed; bottom: 2rem; right: 2rem; z-index: 30; text-decoration: none !important; }
+        html.dark .btn-falcon { background-color: #374151; box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); }
+        .svgIcon { width: 12px; transition-duration: 0.3s; }
         .svgIcon path { fill: white; }
-        .btn-falcon:hover {
-            width: 140px;
-            border-radius: 50px;
-            transition-duration: 0.3s;
-            background-color: #3b82f6; 
-            align-items: center;
-        }
-        .btn-falcon:hover .svgIcon {
-            width: 20px;
-            transition-duration: 0.3s;
-            transform: translateY(60%);
-            transform: rotate(360deg);
-        }
-        .btn-falcon::before {
-            display: none;
-            content: "Back to Top";
-            color: white;
-            transition-duration: 0.3s;
-            font-size: 2px;
-        }
-        .btn-falcon:hover::before {
-            display: block;
-            padding-right: 10px;
-            font-size: 13px;
-            opacity: 1;
-            transform: translateY(0px);
-            transition-duration: 0.3s;
-        }
+        .btn-falcon:hover { width: 140px; border-radius: 50px; transition-duration: 0.3s; background-color: #3b82f6; align-items: center; }
+        .btn-falcon:hover .svgIcon { width: 20px; transition-duration: 0.3s; transform: translateY(60%); transform: rotate(360deg); }
+        .btn-falcon::before { display: none; content: "Back to Top"; color: white; transition-duration: 0.3s; font-size: 2px; }
+        .btn-falcon:hover::before { display: block; padding-right: 10px; font-size: 13px; opacity: 1; transform: translateY(0px); transition-duration: 0.3s; }
 
-        /* ============= Quiz Modal Styles ============= */
-        .quiz-option {
-            width: 100%;
-            text-align: left;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 1rem;
-            background: white;
-            transition: all 0.2s;
-            color: #374151;
-        }
-        html.dark .quiz-option {
-            background: #1f2937;
-            border-color: #4b5563;
-            color: #d1d5db;
-        }
-        .quiz-option:hover {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-        }
-        html.dark .quiz-option:hover {
-            border-color: #3b82f6;
-            background-color: #111827;
-        }
-        .quiz-option.correct {
-            border-color: #22c55e;
-            background-color: #f0fdf4;
-            color: #15803d;
-        }
-        html.dark .quiz-option.correct {
-            background-color: #064e3b;
-            color: #86efac;
-        }
-        .quiz-option.wrong {
-            border-color: #ef4444;
-            background-color: #fef2f2;
-            color: #b91c1c;
-        }
-        html.dark .quiz-option.wrong {
-            background-color: #7f1d1d;
-            color: #fca5a5;
-        }
-
-        /* ============= New Online Preview Button (Tiny Chipmunk 51 Style) ============= */
-        .btn-chipmunk {
-            padding: 0.8em 1.8em;
-            border: 2px solid #3b82f6; 
-            position: relative;
-            overflow: hidden;
-            background-color: transparent;
-            text-align: center;
-            text-transform: uppercase;
-            font-size: 14px;
-            transition: .3s;
-            z-index: 1;
-            font-family: inherit;
-            color: #3b82f6;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            text-decoration: none !important;
-        }
-        .btn-chipmunk::before {
-            content: '';
-            width: 0;
-            height: 500%; /* 增加高度以確保覆蓋 */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(45deg);
-            background: #3b82f6;
-            transition: .5s ease;
-            display: block;
-            z-index: -1;
-        }
-        .btn-chipmunk:hover::before {
-            width: 600%; /* 增加寬度以確保覆蓋 */
-        }
-        .btn-chipmunk:hover {
-            color: #ffffff; 
-            box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
-        }
-        html.dark .btn-chipmunk {
-            border-color: #60a5fa; 
-            color: #60a5fa;
-        }
-        html.dark .btn-chipmunk::before {
-            background: #60a5fa;
-        }
-        html.dark .btn-chipmunk:hover {
-            color: #111827;
-        }
+        /* Online Preview Button */
+        .btn-chipmunk { padding: 0.8em 1.8em; border: 2px solid #3b82f6; position: relative; overflow: hidden; background-color: transparent; text-align: center; text-transform: uppercase; font-size: 14px; transition: .3s; z-index: 1; font-family: inherit; color: #3b82f6; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none !important; }
+        .btn-chipmunk::before { content: ''; width: 0; height: 500%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); background: #3b82f6; transition: .5s ease; display: block; z-index: -1; }
+        .btn-chipmunk:hover::before { width: 600%; }
+        .btn-chipmunk:hover { color: #ffffff; box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5); }
+        html.dark .btn-chipmunk { border-color: #60a5fa; color: #60a5fa; }
+        html.dark .btn-chipmunk::before { background: #60a5fa; }
+        html.dark .btn-chipmunk:hover { color: #111827; }
     </style>
 </head>
 <body class="antialiased pb-10">
@@ -803,14 +485,12 @@
                 </div>
                 <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-primary dark:text-white">
                     嗨，我是 Aron<br>
-                    <!-- 打字機文字容器 -->
                     <span class="text-blue-600 dark:text-blue-400 typing-cursor" id="typewriter"></span>
                 </h1>
                 <p class="text-lg text-secondary dark:text-gray-400 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    我善於運用 AI 工具輔助程式學習，將創意轉化為實際的應用程式。致力於探索 AI 與軟體開發結合的無限可能。
+                    我善於運用工具輔助程式學習，將創意轉化為實際的應用程式。致力於探索軟體開發結合的無限可能。
                 </p>
                 
-                <!-- 按鈕組 -->
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
                     <a href="#contact" class="btn-black magnetic-btn">
                         <i class="fas fa-paper-plane"></i> 給予建議
@@ -820,13 +500,11 @@
                     </a>
                 </div>
 
-                <!-- 社群連結 -->
                 <div class="flex justify-center lg:justify-start gap-6 pt-4 text-secondary dark:text-gray-400">
                     <a href="#contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-2xl" title="前往聯絡區塊"><i class="far fa-envelope"></i></a>
                     <a href="https://github.com/aronccc" target="_blank" class="hover:text-black dark:hover:text-white transition-colors text-2xl" title="GitHub"><i class="fab fa-github"></i></a>
                 </div>
                 
-                <!-- Konami Code 提示已移除 -->
             </div>
 
             <!-- 右側圖片 -->
@@ -836,7 +514,6 @@
                      id="avatar-container"
                      onclick="spinAvatar()"
                      title="點我轉圈圈！">
-                    <!-- 圖片已更換 -->
                     <img src="IMG_20251203_235357_165.jpg" alt="Aron Avatar" class="w-full h-full object-cover">
                 </div>
             </div>
@@ -847,7 +524,6 @@
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-primary dark:text-white">關於我</h2>
                 <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
-                <p class="text-sm text-gray-400 mt-2">💡 小提示：點擊下方的技能標籤，聽聽 AI 怎麼說！</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -860,7 +536,7 @@
                         <div>
                             <h3 class="text-xl font-bold mb-3 dark:text-white">將想法變為真實</h3>
                             <p class="text-secondary dark:text-gray-300 leading-relaxed">
-                                我是一名高中生，利用AI將天馬行空的想法變為真實。我的目標是創造既實用又具備吸引力的軟體。
+                                我是一名高中生，利用程式技術將天馬行空的想法變為真實。我的目標是創造既實用又具備吸引力的軟體。
                             </p>
                         </div>
                     </div>
@@ -875,16 +551,13 @@
                             </div>
                             <h3 class="text-lg font-bold dark:text-white">開發技能</h3>
                         </div>
-                        <button onclick="startQuiz()" class="text-xs bg-gradient-to-r from-pink-500 to-orange-400 text-white px-3 py-1 rounded-full font-bold shadow-md hover:scale-105 transition-transform animate-pulse-slow">
-                            ⚔️ 挑戰我
-                        </button>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <span class="interactive-tag" onclick="explainSkill('HTML')">HTML <i class="fas fa-magic"></i></span>
-                        <span class="interactive-tag" onclick="explainSkill('CSS')">CSS <i class="fas fa-magic"></i></span>
-                        <span class="interactive-tag" onclick="explainSkill('JavaScript')">JavaScript <i class="fas fa-magic"></i></span>
-                        <span class="interactive-tag" onclick="explainSkill('Python')">Python <i class="fas fa-magic"></i></span>
-                        <span class="interactive-tag" onclick="explainSkill('C++')">C++ <i class="fas fa-magic"></i></span>
+                        <span class="skill-tag">HTML</span>
+                        <span class="skill-tag">CSS</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">C++</span>
                     </div>
                 </div>
 
@@ -897,9 +570,8 @@
                         <h3 class="text-lg font-bold dark:text-white">使用工具</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <span class="interactive-tag" onclick="explainSkill('Google Gemini AI')"><i class="fas fa-star text-xs"></i> Gemini</span>
-                        <span class="interactive-tag" onclick="explainSkill('VS Code')"><i class="fas fa-code text-xs"></i> VS Code</span>
-                        <span class="interactive-tag" onclick="explainSkill('GitHub')"><i class="fab fa-github text-xs"></i> GitHub</span>
+                        <span class="skill-tag"><i class="fas fa-code text-xs"></i> VS Code</span>
+                        <span class="skill-tag"><i class="fab fa-github text-xs"></i> GitHub</span>
                     </div>
                 </div>
             </div>
@@ -915,11 +587,11 @@
                 </p>
             </div>
 
-            <!-- AI 作品分類 -->
+            <!-- 實作作品分類 -->
             <div class="mb-16">
                 <div class="flex items-center gap-4 mb-8">
                     <h3 class="text-2xl font-bold text-primary dark:text-white flex items-center gap-2">
-                        <i class="fas fa-robot text-blue-600 dark:text-blue-400"></i> AI & 實作作品
+                        <i class="fas fa-code text-blue-600 dark:text-blue-400"></i> 實作作品
                     </h3>
                     <div class="h-px bg-gray-200 dark:bg-gray-700 flex-grow"></div>
                 </div>
@@ -1061,21 +733,6 @@
                         </div>
                     </div>
 
-                    <!-- New Project Idea Generator Card -->
-                    <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] rounded-4xl shadow-soft hover-card group flex flex-col h-full cursor-pointer" onclick="generateProjectIdea(this)">
-                        <div class="bg-white dark:bg-gray-800 h-full w-full rounded-[1.9rem] p-4 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-white/10 dark:bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                            <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white text-3xl mb-4 shadow-lg animate-bounce-slight">
-                                💡
-                            </div>
-                            <h3 id="idea-title" class="text-xl font-bold text-gray-800 dark:text-white mb-2">缺乏靈感嗎？</h3>
-                            <p id="idea-desc" class="text-secondary dark:text-gray-300 text-sm">點擊卡片，讓 AI 為您的下一個專案提供絕佳點子！</p>
-                            <div id="idea-loading" class="hidden mt-3">
-                                <i class="fas fa-circle-notch fa-spin text-indigo-500 text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
             <!-- FreeCodeCamp (Condensed) -->
@@ -1155,7 +812,6 @@
                             <div class="relative">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">訊息內容</label>
                                 <textarea name="message" id="form-message" rows="5" class="form-input resize-none" placeholder="請告訴我您的建議..." required></textarea>
-                                <button type="button" onclick="generateEmailDraft()" title="AI 幫我寫" class="absolute bottom-4 right-4 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"><i class="fas fa-magic text-sm"></i></button>
                             </div>
                             <div id="form-error-msg" class="text-red-500 text-sm hidden text-center"></div>
                             <button type="submit" id="submit-btn" class="btn-uiverse">
@@ -1170,43 +826,6 @@
         <footer class="text-center text-gray-400 text-sm py-8"><p>&copy; 2025 Aron. 版權所有.</p></footer>
     </main>
 
-    <!-- Quiz Modal -->
-    <div id="quiz-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeQuiz()"></div>
-        <div class="relative bg-white dark:bg-gray-800 w-full max-w-lg rounded-[2rem] shadow-2xl p-8 animate-[pop-in_0.4s_ease-out] flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-400 rounded-full flex items-center justify-center text-white">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-primary dark:text-white">AI 技能挑戰</h3>
-                </div>
-                <button onclick="closeQuiz()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fas fa-times"></i></button>
-            </div>
-            
-            <div id="quiz-loading" class="text-center py-8">
-                <div class="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p class="text-gray-500 dark:text-gray-400">Gemini 正在出題中...</p>
-            </div>
-
-            <div id="quiz-content" class="hidden">
-                <p id="quiz-question" class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-6 leading-relaxed"></p>
-                <div id="quiz-options" class="space-y-3">
-                    <!-- Options will be injected here -->
-                </div>
-                <div id="quiz-result" class="mt-4 hidden p-4 rounded-xl text-sm"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Skill Explanation Toast -->
-    <div id="skill-toast">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center shrink-0"><i class="fas fa-robot text-white text-xs"></i></div>
-            <p id="skill-toast-content" class="text-sm font-medium">AI 正在思考...</p>
-        </div>
-    </div>
-
     <!-- Level Badge -->
     <div id="level-badge" class="level-badge">
         <div class="level-icon"><i class="fas fa-user"></i></div>
@@ -1220,24 +839,6 @@
         <p class="text-gray-300 mb-4">獲得新稱號：</p>
         <div id="new-level-title" class="text-xl font-bold text-yellow-400 mb-6 border-b-2 border-yellow-400/30 pb-2 inline-block">LV.5 探索者</div>
         <button onclick="closeLevelUp()" class="block w-full py-2 bg-white text-gray-900 rounded-xl font-bold hover:bg-gray-100 transition-colors">太棒了！</button>
-    </div>
-
-    <!-- AI Chat Widget -->
-    <div class="fixed bottom-24 right-8 z-40 flex flex-col items-end">
-        <div id="ai-chat-window" class="hidden mb-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-[90vw] md:w-[350px] h-[500px] flex flex-col border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all origin-bottom-right">
-            <div class="bg-indigo-600 p-4 text-white flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-2"><i class="fas fa-robot"></i><span class="font-bold">Aron's AI Assistant ✨</span></div>
-                <button onclick="toggleChat()" class="text-white hover:text-gray-200"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 space-y-4">
-                <div class="chat-bubble-ai"><p>你好！我是 Aron 的 AI 助手。你可以問我關於 Aron 的技能、專案，或是作品集的任何問題！✨</p></div>
-            </div>
-            <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex gap-2 shrink-0">
-                <input type="text" id="chat-input" placeholder="問我關於 Aron 的事情..." class="flex-1 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-full px-4 py-2 focus:outline-none focus:border-indigo-500 text-sm" onkeypress="handleKeyPress(event)">
-                <button onclick="sendMessage()" class="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-indigo-700 transition-colors flex-shrink-0"><i class="fas fa-paper-plane text-sm"></i></button>
-            </div>
-        </div>
-        <button onclick="toggleChat()" class="w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center text-2xl z-50 group"><i class="fas fa-robot group-hover:animate-pulse"></i></button>
     </div>
 
     <!-- Back to Top Button -->
@@ -1317,7 +918,7 @@
 
             // Level System
             let currentLevel = 1; let maxReachedLevel = 1; let konamiActivated = false;
-            let quizWins = 0; let maxPctScrolled = 0;
+            let maxPctScrolled = 0;
             const startTime = Date.now();
             const scrollMilestones = [15, 35, 55, 75, 95];
             const timeMilestones = [30, 60, 180, 300, 600];
@@ -1333,8 +934,6 @@
                 return "路過的路人";
             }
 
-            window.incrementQuizWins = function() { quizWins++; checkAndProcessLevelUp(); };
-
             function calculateCurrentLevel() {
                 if (konamiActivated) return 999;
                 let level = 1;
@@ -1346,7 +945,6 @@
                 const pctScrolled = Math.floor(scrollTop / (docHeight - winHeight) * 100);
                 if (pctScrolled > maxPctScrolled) maxPctScrolled = pctScrolled;
                 scrollMilestones.forEach(threshold => { if (maxPctScrolled >= threshold) level++; });
-                level += quizWins;
                 return { level, title: getTitleForLevel(level) };
             }
 
@@ -1458,271 +1056,6 @@
         function copyEmail() { navigator.clipboard.writeText("aronforcode@gmail.com").then(() => { const t = document.getElementById('copy-text'); const old = t.innerText; t.innerText = "已複製！"; setTimeout(()=>t.innerText=old, 2000); }); }
         function openModal(id) { const m = document.getElementById(id); if(m) { m.classList.remove('hidden'); m.classList.add('flex'); document.body.style.overflow = 'hidden'; } }
         function closeModal(id) { const m = document.getElementById(id); if(m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; } }
-
-        // ================= Gemini AI Logic =================
-        const apiKey = ""; 
-        const systemContext = `You are an AI assistant for Aron's portfolio. Tone: Friendly, concise.`;
-        
-        let isGenerating = false; // Lock to prevent double submit
-
-        // --- NEW: Project Idea Generator Logic ---
-        async function generateProjectIdea(cardElement) {
-            if (isGenerating) return; // Prevent multiple clicks
-            if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
-            
-            isGenerating = true;
-            const titleEl = cardElement.querySelector('#idea-title');
-            const descEl = cardElement.querySelector('#idea-desc');
-            const loadingEl = cardElement.querySelector('#idea-loading');
-            
-            // UI Loading State
-            const originalTitle = titleEl.textContent;
-            const originalDesc = descEl.textContent;
-            
-            titleEl.textContent = "AI 正在構思...";
-            descEl.textContent = "正在分析您的技能堆疊並尋找最佳點子...";
-            loadingEl.classList.remove('hidden');
-            cardElement.style.pointerEvents = 'none';
-
-            try {
-                const prompt = "Generate 1 creative, unique web development project idea suitable for a portfolio. Tech stack: React, Tailwind CSS, JavaScript. Format: Title: [Title] | Description: [One catchy sentence description]. Keep it brief.";
-                const responseText = await runGeminiWithRetry(prompt, "You are a creative mentor.");
-                
-                // Parse result
-                let title = "AI 專案點子";
-                let desc = responseText;
-                
-                if (responseText.includes("Title:") && responseText.includes("Description:")) {
-                    const parts = responseText.split("|");
-                    if (parts.length >= 2) {
-                        title = parts[0].replace("Title:", "").trim();
-                        desc = parts[1].replace("Description:", "").trim();
-                    } else {
-                        const lines = responseText.split("\n");
-                        title = lines[0].replace("Title:", "").trim();
-                        desc = lines.slice(1).join(" ").replace("Description:", "").trim();
-                    }
-                }
-
-                titleEl.textContent = title;
-                descEl.textContent = desc;
-                
-            } catch (e) {
-                console.error(e);
-                titleEl.textContent = "生成失敗";
-                descEl.textContent = "AI 暫時忙碌，請稍後再試。";
-            } finally {
-                loadingEl.classList.add('hidden');
-                cardElement.style.pointerEvents = 'auto';
-                isGenerating = false;
-            }
-        }
-
-        // --- Quiz Logic ---
-        let currentQuizAnswer = -1;
-        async function startQuiz() {
-            if (isGenerating) return;
-            if (!apiKey) { alert("請先在程式碼中填入 API Key！"); return; }
-            
-            isGenerating = true;
-            const modal = document.getElementById('quiz-modal');
-            const loading = document.getElementById('quiz-loading');
-            const content = document.getElementById('quiz-content');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            loading.classList.remove('hidden');
-            content.classList.add('hidden');
-
-            const skills = ["HTML", "CSS", "JavaScript", "Python", "React", "Web Design"];
-            const skill = skills[Math.floor(Math.random() * skills.length)];
-
-            try {
-                const prompt = `Generate 1 multiple choice question about ${skill} for a beginner developer in Traditional Chinese. 
-                Return strictly valid JSON with no markdown formatting. Format:
-                { "q": "Question text", "o": ["Option A", "Option B", "Option C", "Option D"], "a": 0, "e": "Short explanation" }
-                (where 'a' is the index of the correct answer 0-3)`;
-
-                const responseText = await runGeminiWithRetry(prompt, "You are a quiz generator that outputs strictly valid JSON.");
-                const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-                const data = JSON.parse(cleanJson);
-
-                document.getElementById('quiz-question').textContent = `[${skill}] ${data.q}`;
-                const optionsContainer = document.getElementById('quiz-options');
-                optionsContainer.innerHTML = '';
-                currentQuizAnswer = data.a;
-
-                data.o.forEach((opt, idx) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'quiz-option';
-                    btn.textContent = opt;
-                    btn.onclick = () => checkQuizAnswer(btn, idx, data.a, data.e);
-                    optionsContainer.appendChild(btn);
-                });
-
-                document.getElementById('quiz-result').className = 'mt-4 hidden p-4 rounded-xl text-sm'; 
-                loading.classList.add('hidden');
-                content.classList.remove('hidden');
-
-            } catch (e) {
-                console.error(e);
-                alert("AI 正在休息，請稍後再試！");
-                closeQuiz();
-            } finally {
-                isGenerating = false;
-            }
-        }
-
-        function checkQuizAnswer(btn, selectedIdx, correctIdx, explanation) {
-            const options = document.querySelectorAll('.quiz-option');
-            const resultBox = document.getElementById('quiz-result');
-            options.forEach(opt => opt.disabled = true);
-
-            if (selectedIdx === correctIdx) {
-                btn.classList.add('correct');
-                resultBox.className = 'mt-4 block p-4 rounded-xl text-sm bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200';
-                resultBox.innerHTML = `<strong>🎉 答對了！</strong> <br> ${explanation} <br><span class="text-xs mt-1 block">經驗值 +1 (等級提升)</span>`;
-                if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                if(window.incrementQuizWins) window.incrementQuizWins();
-            } else {
-                btn.classList.add('wrong');
-                options[correctIdx].classList.add('correct');
-                resultBox.className = 'mt-4 block p-4 rounded-xl text-sm bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
-                resultBox.innerHTML = `<strong>😅 答錯了...</strong> <br> ${explanation}`;
-            }
-        }
-        function closeQuiz() { closeModal('quiz-modal'); }
-
-        // --- Core Gemini Function with Robust Retry ---
-        async function runGeminiWithRetry(text, customContext = null) {
-            // Updated model list to prioritize stability
-            const candidateModels = ["gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"];
-            let lastError = null;
-
-            // Loop through each model
-            for (const model of candidateModels) {
-                // Try each model up to 2 times
-                for (let attempt = 0; attempt < 2; attempt++) {
-                    try {
-                        const data = await callGeminiAPI(model, text, customContext);
-                        return data.candidates[0].content.parts[0].text;
-                    } catch (err) {
-                        console.warn(`Model ${model} attempt ${attempt + 1} failed: ${err.message}`);
-                        lastError = err;
-                        
-                        if (err.message === "TooManyRequests") {
-                            // Rate limit hit (429) - wait with exponential backoff and retry same model
-                            const waitTime = (attempt + 1) * 2000;
-                            await new Promise(r => setTimeout(r, waitTime));
-                        } else if (err.message === "ModelError") {
-                            // 404/400 - Model not found/invalid, stop retrying this model, try next one
-                            break; 
-                        } else {
-                            // Other errors (network etc) - maybe retry or try next
-                            break;
-                        }
-                    }
-                }
-            }
-            throw lastError || new Error("All models failed");
-        }
-
-        async function callGeminiAPI(modelName, userText, customContext) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }], systemInstruction: { parts: [{ text: customContext || systemContext }] } })
-            });
-            
-            if (!response.ok) {
-                // Determine error type based on status code
-                if (response.status === 404 || response.status === 400) throw new Error("ModelError");
-                if (response.status === 429) throw new Error("TooManyRequests");
-                if (response.status === 503) throw new Error("ServiceUnavailable");
-                throw new Error(`API Error: ${response.status}`);
-            }
-            return response.json();
-        }
-
-        function toggleChat() { document.getElementById('ai-chat-window').classList.toggle('hidden'); }
-        async function sendMessage() {
-            if (isGenerating) return;
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            isGenerating = true;
-            const container = document.getElementById('chat-messages');
-            container.innerHTML += `<div class="chat-bubble-user">${text}</div>`;
-            input.value = '';
-            container.innerHTML += `<div id="loading" class="chat-bubble-ai"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-            container.scrollTop = container.scrollHeight;
-            
-            if(!apiKey) { 
-                document.getElementById('loading').innerHTML = "請設定 API Key"; 
-                isGenerating = false;
-                return; 
-            }
-            
-            try {
-                const reply = await runGeminiWithRetry(text);
-                const loadingBubble = document.getElementById('loading');
-                if(loadingBubble) loadingBubble.remove();
-                
-                const bubble = document.createElement('div'); 
-                bubble.className = 'chat-bubble-ai';
-                bubble.innerHTML = marked.parse(reply);
-                container.appendChild(bubble);
-            } catch(e) { 
-                const loading = document.getElementById('loading');
-                if(loading) loading.textContent = "AI 暫時無法回應 (Busy)，請稍後再試。"; 
-            } finally {
-                isGenerating = false;
-            }
-            container.scrollTop = container.scrollHeight;
-        }
-        function handleKeyPress(e) { if(e.key === 'Enter') sendMessage(); }
-        
-        async function generateEmailDraft() {
-            if (isGenerating) return;
-            if(!apiKey) return alert("No Key");
-            const intent = prompt("請告訴我你想傳達的重點"); if(!intent) return;
-            
-            isGenerating = true;
-            const ta = document.getElementById('form-message'); 
-            ta.value="AI Thinking..."; 
-            ta.disabled=true;
-            
-            try { 
-                ta.value = await runGeminiWithRetry(intent, "Write a polite email body in Traditional Chinese based on intent."); 
-            } catch(e) { 
-                ta.value="Error generating email."; 
-            } finally { 
-                ta.disabled=false; 
-                isGenerating = false;
-            }
-        }
-        
-        async function explainSkill(s) {
-            if (isGenerating) return;
-            if(!apiKey) return alert("No Key");
-            
-            isGenerating = true;
-            const t = document.getElementById('skill-toast'); 
-            document.getElementById('skill-toast-content').textContent=`Thinking about ${s}...`; 
-            t.classList.add('show');
-            
-            try { 
-                const r = await runGeminiWithRetry(`Explain ${s}`, "Explain briefly in Traditional Chinese."); 
-                document.getElementById('skill-toast-content').textContent=`💡 ${s}: ${r}`; 
-            } catch(e) { 
-                document.getElementById('skill-toast-content').textContent="AI Busy..."; 
-            } finally {
-                isGenerating = false;
-            }
-            setTimeout(()=>t.classList.remove('show'), 5000);
-        }
     </script>
 </body>
 </html>
